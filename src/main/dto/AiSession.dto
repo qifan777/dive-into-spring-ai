@@ -1,0 +1,6 @@
+export io.github.qifan777.knowledge.ai.session.AiSession
+
+input AiSessionInput{
+    id?
+    name
+}

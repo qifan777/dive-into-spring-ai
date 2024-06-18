@@ -75,7 +75,9 @@ spring:
       enabled: true
       chat:
         model: moonshot-v1-32k
-
+    vectorstore:
+      redis:
+        uri: redis://default:123456@localhost:6379
 
 server:
   port: 9902
