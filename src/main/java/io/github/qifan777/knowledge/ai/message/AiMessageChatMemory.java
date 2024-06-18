@@ -27,6 +27,12 @@ public class AiMessageChatMemory implements ChatMemory {
     private final AiMessageRepository messageRepository;
     private final AiSessionRepository sessionRepository;
 
+    /**
+     * 将用户发送的消息和AI回复的消息保存到数据库
+     *
+     * @param conversationId 会话id
+     * @param messages       org.springframework.ai.chat.messages.Message 用户发送的消息和AI回复的消息
+     */
     @Override
     public void add(String conversationId, List<Message> messages) {
         List<AiMessage> aiMessageList = messages
@@ -43,15 +49,29 @@ public class AiMessageChatMemory implements ChatMemory {
         messageRepository.saveEntities(aiMessageList);
     }
 
-
+    /**
+     * 查询会话内的消息最新n条历史记录
+     *
+     * @param conversationId 会话id
+     * @param lastN          最近n条
+     * @return org.springframework.ai.chat.messages.Message格式的消息
+     */
     @Override
     public List<Message> get(String conversationId, int lastN) {
-        return messageRepository.findBySessionId(conversationId, lastN)
+        return messageRepository
+                // 查询会话内的最新n条消息
+                .findBySessionId(conversationId, lastN)
                 .stream()
+                // 转成Message对象
                 .map(AiMessageChatMemory::toSpringAiMessage)
                 .toList();
     }
 
+    /**
+     * 清除会话内的消息
+     *
+     * @param conversationId 会话id
+     */
     @Override
     public void clear(String conversationId) {
         messageRepository.deleteBySessionId(conversationId);

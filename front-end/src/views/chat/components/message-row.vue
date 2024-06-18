@@ -24,7 +24,13 @@ const images = computed(() => {
     <div class="row">
       <!-- 头像， -->
       <div class="avatar-wrapper">
-        <el-avatar :src="avatar || logo" class="avatar" shape="square" />
+        <el-avatar
+          :src="avatar || logo"
+          class="avatar"
+          shape="square"
+          v-if="message.type === 'USER'"
+        />
+        <el-avatar :src="logo" class="avatar" shape="square" v-else />
       </div>
       <!-- 发送的消息或者回复的消息 -->
       <div class="message">

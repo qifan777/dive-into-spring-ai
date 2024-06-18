@@ -7,11 +7,9 @@ import MessageInput from './components/message-input.vue'
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus'
 import { api } from '@/utils/api-instance'
-import { useHomeStore } from '@/stores/home-store'
 import { SSE, type SSEvent } from 'sse.js'
 import { type AiMessage, useChatStore } from './store/chat-store'
 
-const homeStore = useHomeStore()
 const chatStore = useChatStore()
 const { handleDeleteSession, handleUpdateSession } = chatStore
 const { activeSession, sessionList, isEdit } = storeToRefs(chatStore)
@@ -19,7 +17,6 @@ const messageListRef = ref<InstanceType<typeof HTMLDivElement>>()
 const loading = ref(true)
 
 onMounted(async () => {
-  await homeStore.getUserInfo()
   // 查询自己的聊天会话
   api.aiSessionController.findByUser().then((res) => {
     // 讲会话添加到列表中
@@ -72,21 +69,19 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
   }
   const evtSource = new SSE(import.meta.env.VITE_API_PREFIX + '/message/chat', {
     withCredentials: true,
+    // 禁用自动启动，需要调用stream()方法才能发起请求
     start: false,
     headers: { 'Content-Type': 'application/json' },
     payload: JSON.stringify(chatMessage),
     method: 'POST'
   })
   evtSource.addEventListener('message', async (event: any) => {
-    console.log('回复结果', event)
     responseMessage.value.textContent = event.data
-    responseMessage.value.textContent += event.data
+    // 非通义千问使用下面的消息拼接逻辑
+    // responseMessage.value.textContent += event.data
   })
+  // 调用stream，发起请求。
   evtSource.stream()
-  evtSource.onerror = (error: SSEvent) => {
-    console.log(error)
-  }
-
   // 将两条消息显示在页面中
   activeSession.value.messages.push(...[chatMessage, responseMessage.value])
   await nextTick(() => {
@@ -163,7 +158,6 @@ const handleSessionCreate = () => {
               v-for="message in activeSession.messages"
               :key="message.id"
               :message="message"
-              :avatar="homeStore.userInfo?.avatar"
             ></message-row>
           </transition-group>
         </div>
@@ -184,10 +178,12 @@ const handleSessionCreate = () => {
     display: flex;
     background-color: white;
     width: 90%;
-    height: 80%;
+    height: 90%;
     box-shadow: 0 0 10px rgba(black, 0.1);
     border-radius: 10px;
     .session-panel {
+      display: flex;
+      flex-direction: column;
       box-sizing: border-box;
       padding: 20px;
       position: relative;
@@ -202,8 +198,8 @@ const handleSessionCreate = () => {
 
       .session-list {
         overflow-y: scroll;
-        max-height: 70vh;
-        margin-top: 20px;
+        margin: 20px 0;
+        flex: 1;
         .session {
           /* 每个会话之间留一些间距 */
           margin-top: 20px;
@@ -215,7 +211,6 @@ const handleSessionCreate = () => {
 
       .button-wrapper {
         /* entity-panel是相对布局，这边的button-wrapper是相对它绝对布局 */
-        position: absolute;
         bottom: 20px;
         left: 0;
         display: flex;

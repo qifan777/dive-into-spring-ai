@@ -25,20 +25,19 @@ export const useChatStore = defineStore('ai-chat', () => {
     activeSession.value = sessionList.value[0]
   }
   // 从会话列表中删除会话
-  const handleDeleteSession = (session: AiSession) => {
-    api.aiSessionController.delete({ body: [session.id] }).then(() => {
-      const index = sessionList.value.findIndex((value) => {
-        return value.id === session.id
-      })
-      sessionList.value.splice(index, 1)
-      if (index == sessionList.value.length) {
-        activeSession.value = sessionList.value[index - 1]
-      } else {
-        activeSession.value = sessionList.value[index]
-      }
+  const handleDeleteSession = async (session: AiSession) => {
+    await api.aiSessionController.delete({ body: [session.id] })
+    const index = sessionList.value.findIndex((value) => {
+      return value.id === session.id
     })
+    sessionList.value.splice(index, 1)
+    if (index == sessionList.value.length) {
+      activeSession.value = sessionList.value[index - 1]
+    } else {
+      activeSession.value = sessionList.value[index]
+    }
   }
-  // 新增会话
+  // 修改会话
   const handleUpdateSession = async () => {
     if (!activeSession.value) {
       return

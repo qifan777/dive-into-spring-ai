@@ -39,6 +39,7 @@ public interface AiMessage extends BaseEntity {
      */
     @ManyToOne
     @JoinColumn(name = "ai_session_id")
+    @OnDissociate(DissociateAction.DELETE)
     AiSession session();
 
     @Data
