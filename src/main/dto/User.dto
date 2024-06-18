@@ -1,0 +1,10 @@
+export io.github.qifan777.knowledge.user.User
+
+input UserLoginInput{
+    phone
+    password
+}
+input UserRegisterInput{
+    phone
+    password
+}
