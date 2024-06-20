@@ -5,11 +5,28 @@ import { ChatRound, Close, EditPen } from '@element-plus/icons-vue'
 import MessageRow from './components/message-row.vue'
 import MessageInput from './components/message-input.vue'
 import { storeToRefs } from 'pinia'
-import { ElIcon, ElMessage } from 'element-plus'
+import { ElIcon, ElMessage, type UploadProps } from 'element-plus'
 import { api } from '@/utils/api-instance'
-import { SSE, type SSEvent } from 'sse.js'
+import { SSE } from 'sse.js'
 import { type AiMessage, useChatStore } from './store/chat-store'
-
+import type { AiMessageWrapper } from '@/apis/__generated/model/static'
+type ChatResponse = {
+  metadata: {
+    usage: {
+      totalTokens: number
+    }
+  }
+  result: {
+    metadata: {
+      finishReason: string
+    }
+    output: {
+      messageType: string
+      content: string
+    }
+  }
+}
+const API_PREFIX = import.meta.env.VITE_API_PREFIX
 const chatStore = useChatStore()
 const { handleDeleteSession, handleUpdateSession } = chatStore
 const { activeSession, sessionList, isEdit } = storeToRefs(chatStore)
@@ -67,19 +84,37 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
     textContent: '',
     sessionId: activeSession.value.id
   }
-  const evtSource = new SSE(import.meta.env.VITE_API_PREFIX + '/message/chat', {
+  const body: AiMessageWrapper = { message: chatMessage, params: options.value }
+  const evtSource = new SSE(API_PREFIX + '/message/chat', {
     withCredentials: true,
     // 禁用自动启动，需要调用stream()方法才能发起请求
     start: false,
     headers: { 'Content-Type': 'application/json' },
-    payload: JSON.stringify(chatMessage),
+    payload: JSON.stringify(body),
     method: 'POST'
   })
   evtSource.addEventListener('message', async (event: any) => {
-    responseMessage.value.textContent = event.data
-    // 非通义千问使用下面的消息拼接逻辑
-    // responseMessage.value.textContent += event.data
+    const response = JSON.parse(event.data) as ChatResponse
+    const finishReason = response.result.metadata.finishReason
+    if (response.result.output.content) {
+      // dashscope不需要累加回复结果
+      responseMessage.value.textContent = response.result.output.content
+      // 其他模型累加回复结果
+      // responseMessage.value.textContent += response.result.output.content
+      // 滚动到底部
+      await nextTick(() => {
+        messageListRef.value?.scrollTo(0, messageListRef.value.scrollHeight)
+      })
+    }
+    if (finishReason && finishReason.toLowerCase() == 'stop') {
+      evtSource.close()
+      // 保存用户的提问
+      await api.aiMessageController.save({ body: chatMessage })
+      // 保存大模型的回复
+      await api.aiMessageController.save({ body: responseMessage.value })
+    }
   })
+
   // 调用stream，发起请求。
   evtSource.stream()
   // 将两条消息显示在页面中
@@ -91,6 +126,18 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
 
 const handleSessionCreate = () => {
   chatStore.handleCreateSession({ name: '新的聊天' })
+}
+const options = ref({
+  enableVectorStore: false
+})
+const embeddingLoading = ref(false)
+const onUploadSuccess = () => {
+  embeddingLoading.value = false
+  ElMessage.success('上传成功')
+}
+const beforeUpload: UploadProps['beforeUpload'] = (file) => {
+  embeddingLoading.value = true
+  return true
 }
 </script>
 <template>
@@ -163,6 +210,24 @@ const handleSessionCreate = () => {
         </div>
         <!-- 监听发送事件 -->
         <message-input @send="handleSendMessage" v-if="activeSession"></message-input>
+      </div>
+      <div class="option-panel">
+        <el-form>
+          <el-form-item>
+            <el-upload
+              v-loading="embeddingLoading"
+              :action="`${API_PREFIX}/document/embedding`"
+              :show-file-list="false"
+              :on-success="onUploadSuccess"
+              :before-upload="beforeUpload"
+            >
+              <el-button type="primary">上传文档</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="知识库">
+            <el-switch v-model="options.enableVectorStore"></el-switch>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
   </div>
@@ -277,6 +342,12 @@ const handleSessionCreate = () => {
           transform: translateX(30px);
         }
       }
+    }
+    //  选项面板
+    .option-panel {
+      width: 200px;
+      padding: 20px;
+      border-left: 1px solid rgba(black, 0.07);
     }
   }
 }
