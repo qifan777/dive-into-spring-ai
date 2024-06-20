@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, ref } from 'vue'
 import SessionItem from './components/session-item.vue'
-import { ChatRound, Close, EditPen } from '@element-plus/icons-vue'
+import { ChatRound, Close, Delete, EditPen } from '@element-plus/icons-vue'
 import MessageRow from './components/message-row.vue'
 import MessageInput from './components/message-input.vue'
 import { storeToRefs } from 'pinia'
@@ -9,7 +9,8 @@ import { ElIcon, ElMessage, type UploadProps } from 'element-plus'
 import { api } from '@/utils/api-instance'
 import { SSE } from 'sse.js'
 import { type AiMessage, useChatStore } from './store/chat-store'
-import type { AiMessageWrapper } from '@/apis/__generated/model/static'
+import type { AiMessageParams, AiMessageWrapper } from '@/apis/__generated/model/static'
+import type { AiFunctionDto } from '@/apis/__generated/model/dto'
 type ChatResponse = {
   metadata: {
     usage: {
@@ -28,7 +29,7 @@ type ChatResponse = {
 }
 const API_PREFIX = import.meta.env.VITE_API_PREFIX
 const chatStore = useChatStore()
-const { handleDeleteSession, handleUpdateSession } = chatStore
+const { handleDeleteSession, handleUpdateSession, handleClearMessage } = chatStore
 const { activeSession, sessionList, isEdit } = storeToRefs(chatStore)
 const messageListRef = ref<InstanceType<typeof HTMLDivElement>>()
 const loading = ref(true)
@@ -47,6 +48,9 @@ onMounted(async () => {
       handleSessionCreate()
     }
     loading.value = false
+  })
+  api.aiFunctionController.list().then((res) => {
+    functionList.value = res
   })
 })
 
@@ -127,8 +131,9 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
 const handleSessionCreate = () => {
   chatStore.handleCreateSession({ name: '新的聊天' })
 }
-const options = ref({
-  enableVectorStore: false
+const options = ref<AiMessageParams>({
+  enableVectorStore: false,
+  functionNames: []
 })
 const embeddingLoading = ref(false)
 const onUploadSuccess = () => {
@@ -139,6 +144,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   embeddingLoading.value = true
   return true
 }
+const functionList = ref<AiFunctionDto['AiFunctionController/FETCHER'][]>([])
 </script>
 <template>
   <!-- 最外层页面于窗口同宽，使聊天面板居中 -->
@@ -189,6 +195,9 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
           </div>
           <!-- 尾部的编辑按钮 -->
           <div class="rear">
+            <el-icon :size="20" style="margin-right: 10px">
+              <Delete @click="handleClearMessage(activeSession.id)" />
+            </el-icon>
             <el-icon :size="20">
               <!-- 不处于编辑状态显示编辑按钮 -->
               <EditPen v-if="!isEdit" @click="isEdit = true" />
@@ -212,7 +221,7 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
         <message-input @send="handleSendMessage" v-if="activeSession"></message-input>
       </div>
       <div class="option-panel">
-        <el-form>
+        <el-form size="small">
           <el-form-item>
             <el-upload
               v-loading="embeddingLoading"
@@ -226,6 +235,17 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
           </el-form-item>
           <el-form-item label="知识库">
             <el-switch v-model="options.enableVectorStore"></el-switch>
+          </el-form-item>
+          <el-form-item label="函数">
+            <el-select v-model="options.functionNames" multiple collapse-tags placeholder="请选择">
+              <el-option
+                v-for="item in functionList"
+                :key="item.id"
+                :label="item.description"
+                :value="item.name"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-form>
       </div>

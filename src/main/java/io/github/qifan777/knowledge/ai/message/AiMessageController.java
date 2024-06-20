@@ -18,10 +18,7 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @RequestMapping("message")
@@ -35,8 +32,14 @@ public class AiMessageController {
     private final ObjectMapper objectMapper;
     private final AiMessageRepository messageRepository;
 
+    @DeleteMapping("history/{sessionId}")
+    public void deleteHistory(@PathVariable String sessionId) {
+        chatMemory.clear(sessionId);
+    }
+
     /**
      * 消息保存
+     *
      * @param input 用户发送的消息/AI回复的消息
      */
     @PostMapping
@@ -49,9 +52,11 @@ public class AiMessageController {
      * @return SSE流
      */
     @PostMapping(value = "chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<String>> chatStreamWithHistory(@RequestBody AiMessageWrapper input) {
+    public Flux<ServerSentEvent<String>> chat(@RequestBody AiMessageWrapper input) {
+        String[] functionNames = new String[input.getParams().getFunctionNames().size()];
         return ChatClient.create(dashScopeAiChatModel).prompt()
                 .user(promptUserSpec -> toPrompt(promptUserSpec, input.getMessage()))
+                .functions(input.getParams().getFunctionNames().toArray(functionNames))
                 .advisors(advisorSpec -> {
                     // 使用历史消息
                     useChatHistory(advisorSpec, input.getMessage().getSessionId());

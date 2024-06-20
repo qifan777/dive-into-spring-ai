@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { AiSessionDto } from '@/apis/__generated/model/dto'
 import { api } from '@/utils/api-instance'
 import type { AiMessageInput, AiSessionInput } from '@/apis/__generated/model/static'
+import { ElMessageBox } from 'element-plus'
 
 export type AiSession = Pick<
   AiSessionDto['AiSessionRepository/FETCHER'],
@@ -47,13 +48,22 @@ export const useChatStore = defineStore('ai-chat', () => {
     })
     isEdit.value = false
   }
-
+  const handleClearMessage = async (sessionId: string) => {
+    await ElMessageBox.confirm('是否清空会话记录？', '提示')
+    await api.aiMessageController.deleteHistory({ sessionId })
+    const index = sessionList.value.findIndex((value) => {
+      return value.id === sessionId
+    })
+    activeSession.value = await api.aiSessionController.findById({ id: sessionId })
+    sessionList.value[index] = activeSession.value
+  }
   return {
     isEdit,
     activeSession,
     sessionList,
     handleUpdateSession,
     handleCreateSession,
-    handleDeleteSession
+    handleDeleteSession,
+    handleClearMessage
   }
 })
