@@ -22,7 +22,7 @@ public class AiFunctionController {
     private final AiFunctionRepository functionRepository;
     public static final AiFunctionFetcher FETCHER = AiFunctionFetcher.$.allScalarFields();
     public static final String[] FUNCTION_NAME_LIST = new String[]{
-            "documentAnalyzerFunction"
+        "documentAnalyzerFunction"
     };
 
     /**
@@ -35,7 +35,7 @@ public class AiFunctionController {
             FunctionCallback functionCallback = functionCallbackContext.getFunctionCallback(name, null);
             return AiFunctionDraft.$.produce(draft -> {
                 draft.setName(functionCallback.getName())
-                        .setDescription(functionCallback.getDescription());
+                    .setDescription(functionCallback.getDescription());
             });
         }).toList();
         functionRepository.saveEntities(list);

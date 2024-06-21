@@ -34,7 +34,7 @@ public class DocumentController {
         TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new InputStreamResource(file.getInputStream()));
         // 将文本内容划分成更小的块
         List<Document> splitDocuments = new TokenTextSplitter()
-                .apply(tikaDocumentReader.read());
+            .apply(tikaDocumentReader.read());
         // 存入向量数据库，这个过程会自动调用embeddingModel,将文本变成向量再存入。
         vectorStore.add(splitDocuments);
         return true;

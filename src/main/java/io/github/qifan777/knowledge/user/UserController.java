@@ -23,13 +23,13 @@ public class UserController {
     @GetMapping
     public @FetchBy(value = "FETCHER", ownerType = UserRepository.class) User userInfo() {
         return userRepository.findById(StpUtil.getLoginIdAsString(), UserRepository.FETCHER)
-                .orElseThrow(() -> new BusinessException("用户信息不存在"));
+            .orElseThrow(() -> new BusinessException("用户信息不存在"));
     }
 
     @PostMapping("login")
     public SaTokenInfo login(@RequestBody UserLoginInput input) {
         User databaseUser = userRepository.findByPhone(input.getPhone())
-                .orElseThrow(() -> new BusinessException("用户名/密码错误"));
+            .orElseThrow(() -> new BusinessException("用户名/密码错误"));
         if (!BCrypt.checkpw(input.getPassword(), databaseUser.password())) {
             throw new BusinessException("用户名/密码错误");
         }
@@ -45,7 +45,7 @@ public class UserController {
         }
         User save = userRepository.save(UserDraft.$.produce(draft -> {
             draft.setPhone(input.getPhone())
-                    .setPassword(BCrypt.hashpw(input.getPassword()));
+                .setPassword(BCrypt.hashpw(input.getPassword()));
         }));
         StpUtil.login(save.id());
         return StpUtil.getTokenInfo();
