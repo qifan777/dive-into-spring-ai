@@ -12,14 +12,14 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 @Configuration
 public class RedisConfig {
 
-  // redis-start会自动创建LettuceConnectionFactory ，也可以手动创建JedisConnectionFactory
-  @Bean
-  public RedisTemplate<String, Object> stringObjectRedisTemplate(
-      RedisConnectionFactory redisConnectionFactory) {
-    RedisTemplate<String, Object> stringObjectRedisTemplate = new RedisTemplate<>();
-    stringObjectRedisTemplate.setConnectionFactory(redisConnectionFactory);
-    // 使用FastJson序列化object
-    stringObjectRedisTemplate.setDefaultSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-    return stringObjectRedisTemplate;
-  }
+    // redis-start会自动创建LettuceConnectionFactory ，也可以手动创建JedisConnectionFactory
+    @Bean
+    public RedisTemplate<String, Object> stringObjectRedisTemplate(
+        RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Object> stringObjectRedisTemplate = new RedisTemplate<>();
+        stringObjectRedisTemplate.setConnectionFactory(redisConnectionFactory);
+        // 使用FastJson序列化object
+        stringObjectRedisTemplate.setDefaultSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        return stringObjectRedisTemplate;
+    }
 }

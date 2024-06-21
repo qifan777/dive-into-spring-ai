@@ -16,28 +16,28 @@ import java.util.List;
 @JsonComponent
 public class PageableConvert {
 
-  public static class Serializer extends JsonSerializer<Page<?>> {
+    public static class Serializer extends JsonSerializer<Page<?>> {
 
-    @Override
-    public void serialize(Page<?> page, JsonGenerator jsonGenerator,
-        SerializerProvider serializerProvider) throws IOException {
-      PageResult<?> pageResult = new PageResult<>()
-          .setNumber(page.getNumber())
-          .setSize(page.getSize())
-          .setTotalElements(page.getTotalElements())
-          .setTotalPages(page.getTotalPages())
-          .setContent((List<Object>) page.getContent());
-      jsonGenerator.writeObject(pageResult);
+        @Override
+        public void serialize(Page<?> page, JsonGenerator jsonGenerator,
+                              SerializerProvider serializerProvider) throws IOException {
+            PageResult<?> pageResult = new PageResult<>()
+                .setNumber(page.getNumber())
+                .setSize(page.getSize())
+                .setTotalElements(page.getTotalElements())
+                .setTotalPages(page.getTotalPages())
+                .setContent((List<Object>) page.getContent());
+            jsonGenerator.writeObject(pageResult);
+        }
     }
-  }
 
-  public static class Deserializer extends JsonDeserializer<Page<?>> {
+    public static class Deserializer extends JsonDeserializer<Page<?>> {
 
 
-    @Override
-    public Page<?> deserialize(JsonParser jsonParser,
-        DeserializationContext deserializationContext) throws IOException {
-      return jsonParser.readValueAs(Page.class);
+        @Override
+        public Page<?> deserialize(JsonParser jsonParser,
+                                   DeserializationContext deserializationContext) throws IOException {
+            return jsonParser.readValueAs(Page.class);
+        }
     }
-  }
 }

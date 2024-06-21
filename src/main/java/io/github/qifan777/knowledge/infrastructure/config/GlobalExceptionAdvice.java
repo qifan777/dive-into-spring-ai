@@ -26,7 +26,7 @@ public class GlobalExceptionAdvice {
     public ResponseEntity<R<String>> handleBusinessException(BusinessException e) {
         log.error("业务异常", e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(R.fail(e.getResultCode(), e.getMessage()));
+            .body(R.fail(e.getResultCode(), e.getMessage()));
     }
 
     @ExceptionHandler(SystemException.class)
@@ -47,42 +47,42 @@ public class GlobalExceptionAdvice {
         // 不合格的字段，可能有多个，只需要返回其中一个提示用户就行
         // 比如密码为空
         ArrayList<ConstraintViolation<?>> constraintViolations = new ArrayList<>(
-                e.getConstraintViolations());
+            e.getConstraintViolations());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(R.fail(ResultCode.ValidateError,
-                        constraintViolations.get(0).getMessage()));
+            .body(R.fail(ResultCode.ValidateError,
+                constraintViolations.get(0).getMessage()));
 
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<R<String>> handleValidateExceptionForSpring(
-            MethodArgumentNotValidException e) {
+        MethodArgumentNotValidException e) {
         log.warn("校验异常", e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(R.fail(ResultCode.ValidateError,
-                        e.getBindingResult().getAllErrors().get(0)
-                                .getDefaultMessage()));
+            .body(R.fail(ResultCode.ValidateError,
+                e.getBindingResult().getAllErrors().get(0)
+                    .getDefaultMessage()));
     }
 
     @ExceptionHandler(NotLoginException.class)
     public ResponseEntity<R<String>> handleNotLogin(NotLoginException e) {
         log.error("未登录", e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(R.fail(ResultCode.Unauthorized));
+            .body(R.fail(ResultCode.Unauthorized));
     }
 
     @ExceptionHandler(NotRoleException.class)
     public ResponseEntity<R<String>> handleNotRole(NotRoleException e) {
         log.error("角色校验异常", e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(R.fail(ResultCode.NotGrant, e.getMessage()));
+            .body(R.fail(ResultCode.NotGrant, e.getMessage()));
     }
 
     @ExceptionHandler(DisableServiceException.class)
     public ResponseEntity<R<String>> handleDisabledException(DisableServiceException e) {
         log.error("账号封禁", e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(R.fail(ResultCode.StatusHasInvalid, "账号已被封禁"));
+            .body(R.fail(ResultCode.StatusHasInvalid, "账号已被封禁"));
     }
 
 

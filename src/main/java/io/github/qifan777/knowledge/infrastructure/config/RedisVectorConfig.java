@@ -30,10 +30,10 @@ public class RedisVectorConfig {
     public VectorStore vectorStore(DashScopeAiEmbeddingModel embeddingModel,
                                    RedisVectorStoreProperties properties) {
         var config = RedisVectorStore.RedisVectorStoreConfig
-                .builder()
-                .withURI(properties.getUri())
-                .withIndexName(properties.getIndex())
-                .withPrefix(properties.getPrefix()).build();
+            .builder()
+            .withURI(properties.getUri())
+            .withIndexName(properties.getIndex())
+            .withPrefix(properties.getPrefix()).build();
         return new RedisVectorStore(config, embeddingModel, properties.isInitializeSchema());
     }
 }

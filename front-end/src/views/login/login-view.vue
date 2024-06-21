@@ -71,7 +71,7 @@ const handleLogin = async () => {
                   </el-form-item>
                 </el-form>
                 <div class="button-wrapper">
-                  <el-button class="login" type="primary" @click="handleLogin"> 登录 </el-button>
+                  <el-button class="login" type="primary" @click="handleLogin"> 登录</el-button>
                   <el-button
                     class="register"
                     type="info"
