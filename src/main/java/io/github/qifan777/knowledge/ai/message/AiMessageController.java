@@ -1,6 +1,7 @@
 package io.github.qifan777.knowledge.ai.message;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.qifan777.knowledge.ai.agent.Agent;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageInput;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageWrapper;
 import io.qifan.ai.dashscope.DashScopeAiChatModel;
@@ -15,11 +16,14 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+
+import java.util.Map;
 
 @RequestMapping("message")
 @RestController
@@ -31,6 +35,7 @@ public class AiMessageController {
     private final VectorStore vectorStore;
     private final ObjectMapper objectMapper;
     private final AiMessageRepository messageRepository;
+    private final ApplicationContext applicationContext;
 
     @DeleteMapping("history/{sessionId}")
     public void deleteHistory(@PathVariable String sessionId) {
@@ -53,25 +58,33 @@ public class AiMessageController {
      */
     @PostMapping(value = "chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> chat(@RequestBody AiMessageWrapper input) {
-        String[] functionNames = new String[input.getParams().getFunctionNames().size()];
+        String[] functionBeanNames = new String[0];
+        // 如果启用Agent则获取Agent的bean
+        if (input.getParams().getEnableAgent()) {
+            // 获取带有Agent注解的bean
+            Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(Agent.class);
+            functionBeanNames = new String[beansWithAnnotation.keySet().size()];
+            functionBeanNames = beansWithAnnotation.keySet().toArray(functionBeanNames);
+        }
         return ChatClient.create(dashScopeAiChatModel).prompt()
-            .user(promptUserSpec -> toPrompt(promptUserSpec, input.getMessage()))
-            .functions(input.getParams().getFunctionNames().toArray(functionNames))
-            .advisors(advisorSpec -> {
-                // 使用历史消息
-                useChatHistory(advisorSpec, input.getMessage().getSessionId());
-                // 如果启用向量数据库
-                if (input.getParams().getEnableVectorStore()) {
-                    // 使用向量数据库w
-                    useVectorStore(advisorSpec);
-                }
-            })
-            .stream()
-            .chatResponse()
-            .map(chatResponse -> ServerSentEvent.builder(toJson(chatResponse))
-                // 和前端监听的事件相对应
-                .event("message")
-                .build());
+                .user(promptUserSpec -> toPrompt(promptUserSpec, input.getMessage()))
+                // agent列表
+                .functions(functionBeanNames)
+                .advisors(advisorSpec -> {
+                    // 使用历史消息
+                    useChatHistory(advisorSpec, input.getMessage().getSessionId());
+                    // 如果启用向量数据库
+                    if (input.getParams().getEnableVectorStore()) {
+                        // 使用向量数据库w
+                        useVectorStore(advisorSpec);
+                    }
+                })
+                .stream()
+                .chatResponse()
+                .map(chatResponse -> ServerSentEvent.builder(toJson(chatResponse))
+                        // 和前端监听的事件相对应
+                        .event("message")
+                        .build());
     }
 
     @SneakyThrows
@@ -102,12 +115,12 @@ public class AiMessageController {
     public void useVectorStore(ChatClient.AdvisorSpec advisorSpec) {
         // question_answer_context是一个占位符，会替换成向量数据库中查询到的文档。QuestionAnswerAdvisor会替换。
         String promptWithContext = """
-            下面是上下文信息
-            ---------------------
-            {question_answer_context}
-            ---------------------
-            给定的上下文和提供的历史信息，而不是事先的知识，回复用户的意见。如果答案不在上下文中，告诉用户你不能回答这个问题。
-            """;
+                下面是上下文信息
+                ---------------------
+                {question_answer_context}
+                ---------------------
+                给定的上下文和提供的历史信息，而不是事先的知识，回复用户的意见。如果答案不在上下文中，告诉用户你不能回答这个问题。
+                """;
         advisorSpec.advisors(new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults(), promptWithContext));
     }
 }

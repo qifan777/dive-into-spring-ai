@@ -10,7 +10,7 @@ import { api } from '@/utils/api-instance'
 import { SSE } from 'sse.js'
 import { type AiMessage, useChatStore } from './store/chat-store'
 import type { AiMessageParams, AiMessageWrapper } from '@/apis/__generated/model/static'
-import type { AiFunctionDto } from '@/apis/__generated/model/dto'
+
 type ChatResponse = {
   metadata: {
     usage: {
@@ -48,9 +48,6 @@ onMounted(async () => {
       handleSessionCreate()
     }
     loading.value = false
-  })
-  api.aiFunctionController.list().then((res) => {
-    functionList.value = res
   })
 })
 
@@ -133,7 +130,7 @@ const handleSessionCreate = () => {
 }
 const options = ref<AiMessageParams>({
   enableVectorStore: false,
-  functionNames: []
+  enableAgent: false
 })
 const embeddingLoading = ref(false)
 const onUploadSuccess = () => {
@@ -144,7 +141,6 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   embeddingLoading.value = true
   return true
 }
-const functionList = ref<AiFunctionDto['AiFunctionController/FETCHER'][]>([])
 </script>
 <template>
   <!-- 最外层页面于窗口同宽，使聊天面板居中 -->
@@ -172,8 +168,8 @@ const functionList = ref<AiFunctionDto['AiFunctionController/FETCHER'][]>([])
             :icon="ChatRound"
             size="small"
             @click="handleSessionCreate"
-            >创建会话</el-button
-          >
+            >创建会话
+          </el-button>
         </div>
       </div>
       <!-- 右侧的消息记录 -->
@@ -236,16 +232,8 @@ const functionList = ref<AiFunctionDto['AiFunctionController/FETCHER'][]>([])
           <el-form-item label="知识库">
             <el-switch v-model="options.enableVectorStore"></el-switch>
           </el-form-item>
-          <el-form-item label="函数">
-            <el-select v-model="options.functionNames" multiple collapse-tags placeholder="请选择">
-              <el-option
-                v-for="item in functionList"
-                :key="item.id"
-                :label="item.description"
-                :value="item.name"
-              >
-              </el-option>
-            </el-select>
+          <el-form-item label="agent（智能体）">
+            <el-switch v-model="options.enableAgent"></el-switch>
           </el-form-item>
         </el-form>
       </div>
@@ -259,6 +247,7 @@ const functionList = ref<AiFunctionDto['AiFunctionController/FETCHER'][]>([])
   display: flex;
   align-items: center;
   justify-content: center;
+
   .chat-panel {
     display: flex;
     background-color: white;
@@ -266,6 +255,7 @@ const functionList = ref<AiFunctionDto['AiFunctionController/FETCHER'][]>([])
     height: 90%;
     box-shadow: 0 0 10px rgba(black, 0.1);
     border-radius: 10px;
+
     .session-panel {
       display: flex;
       flex-direction: column;
@@ -285,10 +275,12 @@ const functionList = ref<AiFunctionDto['AiFunctionController/FETCHER'][]>([])
         overflow-y: scroll;
         margin: 20px 0;
         flex: 1;
+
         .session {
           /* 每个会话之间留一些间距 */
           margin-top: 20px;
         }
+
         .session:first-child {
           margin-top: 0;
         }
@@ -317,6 +309,7 @@ const functionList = ref<AiFunctionDto['AiFunctionController/FETCHER'][]>([])
       height: 100%;
       display: flex;
       flex-direction: column;
+
       .header {
         padding: 20px 20px 0 20px;
         display: flex;
@@ -363,6 +356,7 @@ const functionList = ref<AiFunctionDto['AiFunctionController/FETCHER'][]>([])
         }
       }
     }
+
     //  选项面板
     .option-panel {
       width: 200px;

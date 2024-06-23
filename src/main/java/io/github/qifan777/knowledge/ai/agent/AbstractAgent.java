@@ -12,9 +12,13 @@ import java.util.function.Function;
 
 @Slf4j
 public abstract class AbstractAgent<Req, Resp> implements Function<Req, Resp> {
-
     private final ChatClient client;
 
+    /**
+     * 构建ChatClient方便子类使用
+     *
+     * @param chatModel 聊天模型
+     */
     public AbstractAgent(DashScopeAiChatModel chatModel) {
         this.client = ChatClient
                 .builder(chatModel)
@@ -27,6 +31,11 @@ public abstract class AbstractAgent<Req, Resp> implements Function<Req, Resp> {
         return client;
     }
 
+    /**
+     * 获取内嵌的Function Call也就是Agent的Tools
+     *
+     * @return Function Call名称列表
+     */
     public String[] getFunctions() {
         List<Class<?>> classList = Arrays.stream(this.getClass().getClasses()).filter(aClass -> aClass.isAnnotationPresent(Description.class)).toList();
         String[] names = new String[classList.size()];

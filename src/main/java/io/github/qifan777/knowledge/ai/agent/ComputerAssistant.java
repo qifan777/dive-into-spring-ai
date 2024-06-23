@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-@Component
+@Agent
 @Description("提供关于当前主机的cpu，文件，文件夹相关问题的有用回答")
 public class ComputerAssistant extends AbstractAgent<ComputerAssistant.Request, String> {
 
