@@ -3,8 +3,6 @@ package io.github.qifan777.knowledge.ai.agent;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.qifan.ai.dashscope.DashScopeAiChatModel;
-import lombok.AllArgsConstructor;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Component;
 
@@ -16,21 +14,24 @@ import java.util.function.Function;
 
 @Component
 @Description("提供关于当前主机的cpu，文件，文件夹相关问题的有用回答")
-@AllArgsConstructor
 public class ComputerAssistant extends AbstractAgent<ComputerAssistant.Request, String> {
-    private final DashScopeAiChatModel chatModel;
+
+
+    protected ComputerAssistant(DashScopeAiChatModel chatModel) {
+        super(chatModel);
+    }
 
     @Override
     public String apply(Request request) {
-        return ChatClient.builder(chatModel)
-            .build().prompt().user(request.query())
-            .functions(getFunctions())
-            .call()
-            .content();
+        return getChatClient()
+                .prompt()
+                .user(request.query())
+                .call()
+                .content();
     }
 
     public record Request(
-        @JsonProperty(required = true) @JsonPropertyDescription(value = "用户原始的提问") String query) {
+            @JsonProperty(required = true) @JsonPropertyDescription(value = "用户原始的提问") String query) {
     }
 
     @Component
@@ -50,7 +51,7 @@ public class ComputerAssistant extends AbstractAgent<ComputerAssistant.Request, 
         }
 
         public record Request(
-            @JsonProperty(required = true) @JsonPropertyDescription("本机文件夹的绝对路径") String path
+                @JsonProperty(required = true) @JsonPropertyDescription("本机文件夹的绝对路径") String path
         ) {
         }
     }
