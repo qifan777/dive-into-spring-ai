@@ -16,33 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `ai_function`
---
-
-DROP TABLE IF EXISTS `ai_function`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `ai_function` (
-  `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `created_time` datetime(6) NOT NULL,
-  `edited_time` datetime(6) NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '函数名称',
-  `description` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '函数描述',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI函数';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `ai_function`
---
-
-LOCK TABLES `ai_function` WRITE;
-/*!40000 ALTER TABLE `ai_function` DISABLE KEYS */;
-INSERT INTO `ai_function` VALUES ('a58148f6b12547f5823911935e3fb6f1','2024-06-20 21:56:39.632048','2024-06-20 21:56:39.632048','documentAnalyzerFunction','文档解析函数');
-/*!40000 ALTER TABLE `ai_function` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `ai_message`
 --
 
@@ -70,7 +43,9 @@ CREATE TABLE `ai_message` (
 
 LOCK TABLES `ai_message` WRITE;
 /*!40000 ALTER TABLE `ai_message` DISABLE KEYS */;
+INSERT INTO `ai_message` VALUES ('05c523bf586b422e8f19d32a6bab17b6','2024-06-23 22:08:33.529844','2024-06-23 22:08:33.529844','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','ASSISTANT','今天的日期是2024年06月23日。',NULL,'b495186b9259494792a9fe4ce8807f25');
 INSERT INTO `ai_message` VALUES ('1d14d513ae8c4ffda0fb50df6e24ba77','2024-06-20 22:08:28.389711','2024-06-20 22:08:28.389711','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','USER','C:\\Users\\Administrator\\Desktop\\2023年工作总结及2024年工作展望-林家成.docx，这份文档的内容是什么？','[]','c4d192c4b2de48bcae585f5b9672cd1d');
+INSERT INTO `ai_message` VALUES ('34d65ad69e4b470794da11732fe44a7d','2024-06-23 22:08:33.337776','2024-06-23 22:08:33.337776','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','USER','今天的日期是多少？','[]','b495186b9259494792a9fe4ce8807f25');
 INSERT INTO `ai_message` VALUES ('ba161500bec84b388a6501b3be333b45','2024-06-20 22:08:28.649439','2024-06-20 22:08:28.649439','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','ASSISTANT','2023年的工作总结及2024年工作展望文档内容概要如下：\n\n1、**工作回顾重点：**\n   - 成功运用Python脚本在一经上云项目中实现Oracle脚本批量迁移、实体批量登记等，极大提升了工作效率（速度提升70倍以上），并提前完成年度工作任务。\n   - 领导新智慧工厂项目的前端与后端框架搭建，采用更高效、安全的技术栈，促进团队快速投入业务开发。重构并优化了基础功能模块，如菜单框架、租户管理等，封装为易用组件。\n   - 开发了脚本依赖分析工具，通过SQL语法树解析等技术，有效辅助故障检测、代码规范检查及开发效率，与部门其他系统（如指标库、报表系统）集成，增强功能实用性。\n\n2、**个人成长与进步：**\n   - 今年最大的成就是深入学习了数据开发知识，综合软件开发能力使自己更能满足用户需求，相比同行具有更全面的技能组合。\n\n3、**应对挑战的方法：**\n   - 面对SQL语法解析等高难度任务，通过自学源码、复习理论基础，成功开发出工具，体现了自我驱动力和解决问题的能力。\n\n4、**反思与改进空间：**\n   - 希望能在项目中实践深度学习、机器学习技术，这是未来努力的一个方向。\n\n5、**提质增效的建议：**\n   - 强调代码审查和个人技能提升，鼓励使用先进技术和工具，以及创建持续学习的环境，以保持竞争力。\n\n6、**对当前开发工作的建议：**\n   - 提倡技术分享会议，打破知识孤岛，促进新老员工间的技术交流和学习，平衡稳定与创新的需求。\n\n7、**其他建议：**\n   - 加强跨部门合作，以新智慧工厂项目为范例，推动更多跨领域协作成果。\n\n对于2024年的展望虽未详细展开，但基于上述总结，可能包括深化技术应用、促进团队协作、继续个人技能升级等方面。',NULL,'c4d192c4b2de48bcae585f5b9672cd1d');
 /*!40000 ALTER TABLE `ai_message` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -146,4 +121,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-21  9:37:48
+-- Dump completed on 2024-06-24 21:11:15
