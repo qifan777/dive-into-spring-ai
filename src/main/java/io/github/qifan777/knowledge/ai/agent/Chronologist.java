@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
 @Agent
-@Description(value = "回答用户有关于时间的提问")
+@Description(value = "回答用户有关于日期、时间的提问")
 public class Chronologist extends AbstractAgent<Chronologist.Request, String> {
     private final String SYSTEM = """
         你是一个专业的编年史学家，可以回答有关时间的问题。
