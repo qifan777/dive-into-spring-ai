@@ -16,9 +16,9 @@ import java.util.function.Function;
 @Description(value = "回答用户有关于时间的提问")
 public class Chronologist extends AbstractAgent<Chronologist.Request, String> {
     private final String SYSTEM = """
-            你是一个专业的编年史学家，可以回答有关时间的问题。
-            您还可以执行各种与时间相关的任务，如转换和格式化。
-            """;
+        你是一个专业的编年史学家，可以回答有关时间的问题。
+        您还可以执行各种与时间相关的任务，如转换和格式化。
+        """;
 
     public Chronologist(DashScopeAiChatModel chatModel) {
         super(chatModel);
@@ -27,15 +27,15 @@ public class Chronologist extends AbstractAgent<Chronologist.Request, String> {
     @Override
     public String apply(Request request) {
         return getChatClient()
-                .prompt()
-                .system(SYSTEM)
-                .user(request.query)
-                .call()
-                .content();
+            .prompt()
+            .system(SYSTEM)
+            .user(request.query)
+            .call()
+            .content();
     }
 
     public record Request(
-            @JsonProperty(required = true) @JsonPropertyDescription(value = "用户原始的提问") String query) {
+        @JsonProperty(required = true) @JsonPropertyDescription(value = "用户原始的提问") String query) {
     }
 
     @Component

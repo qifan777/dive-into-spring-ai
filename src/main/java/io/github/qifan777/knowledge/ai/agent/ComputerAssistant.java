@@ -24,14 +24,14 @@ public class ComputerAssistant extends AbstractAgent<ComputerAssistant.Request, 
     @Override
     public String apply(Request request) {
         return getChatClient()
-                .prompt()
-                .user(request.query())
-                .call()
-                .content();
+            .prompt()
+            .user(request.query())
+            .call()
+            .content();
     }
 
     public record Request(
-            @JsonProperty(required = true) @JsonPropertyDescription(value = "用户原始的提问") String query) {
+        @JsonProperty(required = true) @JsonPropertyDescription(value = "用户原始的提问") String query) {
     }
 
     @Component
@@ -51,7 +51,7 @@ public class ComputerAssistant extends AbstractAgent<ComputerAssistant.Request, 
         }
 
         public record Request(
-                @JsonProperty(required = true) @JsonPropertyDescription("本机文件夹的绝对路径") String path
+            @JsonProperty(required = true) @JsonPropertyDescription("本机文件夹的绝对路径") String path
         ) {
         }
     }

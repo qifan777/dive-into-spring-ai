@@ -21,9 +21,9 @@ public abstract class AbstractAgent<Req, Resp> implements Function<Req, Resp> {
      */
     public AbstractAgent(DashScopeAiChatModel chatModel) {
         this.client = ChatClient
-                .builder(chatModel)
-                .defaultFunctions(getFunctions())
-                .build();
+            .builder(chatModel)
+            .defaultFunctions(getFunctions())
+            .build();
 
     }
 

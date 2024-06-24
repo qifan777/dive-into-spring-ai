@@ -22,26 +22,26 @@ public class AgentTest {
     @Test
     public void agentTest() {
         ChatClient.create(chatModel)
-                .prompt()
-                .user("C:\\Users\\Administrator\\Desktop\\资料，这个文件夹下有哪些文件？")
-                .functions("chronologist", "computerAssistant")
-                .stream()
-                .content()
-                .log()
-                .blockLast();
+            .prompt()
+            .user("C:\\Users\\Administrator\\Desktop\\资料，这个文件夹下有哪些文件？")
+            .functions("chronologist", "computerAssistant")
+            .stream()
+            .content()
+            .log()
+            .blockLast();
     }
 
     @Test
     public void dateFunctionTest() {
         Chronologist chronologist = new Chronologist(chatModel);
         ChatClient.create(chatModel)
-                .prompt()
-                .user("请问当前的日期是多少？")
-                .functions(chronologist.getFunctions())
-                .stream()
-                .content()
-                .log()
-                .blockLast();
+            .prompt()
+            .user("请问当前的日期是多少？")
+            .functions(chronologist.getFunctions())
+            .stream()
+            .content()
+            .log()
+            .blockLast();
     }
 
 }
