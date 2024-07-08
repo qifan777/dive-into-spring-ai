@@ -41,3 +41,17 @@ git clone https://github.com/qifan777/KnowledgeBaseChatSpringAI
 
 1. 运行ServerApplication.java
 2. target/generated-sources/annotations右键mark directory as/generated source root
+
+```shell
+docker run \
+    -d \
+    -p 7474:7474 -p 7687:7687 \
+    -v neo4j-data:/data -v neo4j-data:/plugins \
+    --name neo4j \
+    -e NEO4J_apoc_export_file_enabled=true \
+    -e NEO4J_apoc_import_file_enabled=true \
+    -e NEO4J_apoc_import_file_use__neo4j__config=true \
+    -e NEO4JLABS_PLUGINS=\[\"apoc\"\] \
+    -e NEO4J_dbms_security_procedures_unrestricted=apoc.\\\* \
+    neo4j
+```

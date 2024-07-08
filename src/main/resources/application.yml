@@ -21,6 +21,11 @@ spring:
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
+  neo4j:
+    authentication:
+      username: neo4j
+      password: 12345678
+    uri: bolt://localhost:7687
   ai:
     # 讯飞星火
     spark:
