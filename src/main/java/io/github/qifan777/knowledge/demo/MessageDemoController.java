@@ -2,8 +2,6 @@ package io.github.qifan777.knowledge.demo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qifan.ai.dashscope.DashScopeAiChatModel;
-import io.qifan.ai.kimi.KimiAiChatModel;
-import io.qifan.ai.qianfan.QianFanAiChatModel;
 import io.qifan.ai.spark.SparkAiChatModel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -35,10 +33,6 @@ public class MessageDemoController {
     private final DashScopeAiChatModel dashScopeAiChatModel;
     // 讯飞星火
     private final SparkAiChatModel sparkAiChatModel;
-    // 百度千帆
-    private final QianFanAiChatModel qianFanAiChatModel;
-    // Kimi
-    private final KimiAiChatModel kimiAiChatModel;
     // 智谱清言
     private final ZhiPuAiChatModel zhiPuAiChatModel;
     private final ObjectMapper objectMapper;

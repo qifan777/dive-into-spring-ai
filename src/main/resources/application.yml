@@ -38,12 +38,9 @@ spring:
         model: qwen-max
       embedding:
         model: text-embedding-v2
-    qian-fan:
-      access-key: xxx
+    qianfan:
       secret-key: xxx
-      enabled: true
-      chat:
-        model: ERNIE-4.0-8K
+      api-key: xxx
     openai:
       api-key: xxx
       base-url: xxx
@@ -57,11 +54,8 @@ spring:
         enabled: true
         options:
           model: GLM-4
-    kimi:
+    moonshot:
       api-key: xxx
-      enabled: true
-      chat:
-        model: moonshot-v1-32k
     vectorstore:
       redis:
         uri: redis://default:123456@localhost:6379

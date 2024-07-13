@@ -14,12 +14,17 @@ import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.moonshot.MoonshotChatModel;
+import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
@@ -31,7 +36,7 @@ import java.util.Map;
 @Slf4j
 public class AiMessageController {
     private final AiMessageChatMemory chatMemory;
-    private final DashScopeAiChatModel dashScopeAiChatModel;
+    private final MoonshotChatModel dashScopeAiChatModel;
     private final VectorStore vectorStore;
     private final ObjectMapper objectMapper;
     private final AiMessageRepository messageRepository;
@@ -67,6 +72,7 @@ public class AiMessageController {
             functionBeanNames = beansWithAnnotation.keySet().toArray(functionBeanNames);
         }
         return ChatClient.create(dashScopeAiChatModel).prompt()
+                .system(promptSystemSpec -> toCsvPrompt(promptSystemSpec, input.getParams().getFile(), input.getParams().getEnableProfession()))
                 .user(promptUserSpec -> toPrompt(promptUserSpec, input.getMessage()))
                 // agent列表
                 .functions(functionBeanNames)
@@ -102,6 +108,26 @@ public class AiMessageController {
         }
         // 用户发送的文本
         promptUserSpec.text(message.getContent());
+    }
+
+    @SneakyThrows
+    public void toCsvPrompt(ChatClient.PromptSystemSpec spec, String data, Boolean enableProfession) {
+        if (!StringUtils.hasText(data)) return;
+        UrlResource urlResource = new UrlResource(data);
+        byte[] bytes = urlResource.getInputStream().readAllBytes();
+        String content = new String(bytes);
+        Message message = new PromptTemplate("""
+                下面是表格数据信息
+                ---------------------
+                {context}
+                ---------------------
+                给定的上下文和提供的历史信息，而不是事先的知识，回复用户的意见。如果答案不在上下文中，告诉用户你不能回答这个问题。
+                """)
+                .createMessage(Map.of(
+//                        "role", enableProfession ? "专家" : "初学者",
+                        "context", content));
+        log.info(message.getContent());
+        spec.text(message.getContent());
     }
 
     public void useChatHistory(ChatClient.AdvisorSpec advisorSpec, String sessionId) {

@@ -6,4 +6,6 @@ import lombok.Data;
 public class AiMessageParams {
     Boolean enableVectorStore;
     Boolean enableAgent;
+    String file;
+    Boolean enableProfession;
 }

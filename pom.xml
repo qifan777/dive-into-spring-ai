@@ -54,15 +54,15 @@
             <artifactId>spring-ai-spark-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.qifan777</groupId>
-            <artifactId>spring-ai-kimi-spring-boot-starter</artifactId>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-moonshot-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.qifan777</groupId>
             <artifactId>spring-ai-dashscope-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.qifan777</groupId>
+            <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-qianfan-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
