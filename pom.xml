@@ -29,12 +29,17 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-redis-store</artifactId>
+            <artifactId>generator-core</artifactId>
+            <groupId>io.github.qifan777</groupId>
         </dependency>
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
+            <artifactId>generator-processor</artifactId>
+            <groupId>io.github.qifan777</groupId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor.netty</groupId>
+            <artifactId>reactor-netty</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.ai</groupId>

@@ -6,14 +6,11 @@ import type { AiMessage } from '../store/chat-store'
 import { computed } from 'vue'
 // message：接受消息对象，展示消息内容和头像，并且根据角色调整消息位置。
 // avatar：用户头像，如果角色是 Assistant则使用 logo。
-const props = defineProps<{
-  message: AiMessage
-  avatar?: string
-}>()
+const props = defineProps<{ message: AiMessage; avatar?: string }>()
 
 const images = computed(() => {
   const medias = props.message.medias || []
-  return medias.filter((media) => media.type === 'IMAGE').map((media) => media.data)
+  return medias.filter((media) => media.type === 'image').map((media) => media.data)
 })
 </script>
 

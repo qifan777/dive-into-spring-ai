@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { AiSessionDto } from '@/apis/__generated/model/dto'
 import { api } from '@/utils/api-instance'
 import type { AiMessageInput, AiSessionInput } from '@/apis/__generated/model/static'
@@ -7,7 +7,7 @@ import { ElMessageBox } from 'element-plus'
 
 export type AiSession = Pick<
   AiSessionDto['AiSessionRepository/FETCHER'],
-  'id' | 'name' | 'editedTime'
+  'id' | 'name' | 'editedTime' | 'params'
 > & {
   messages: AiMessage[]
 }
@@ -57,6 +57,7 @@ export const useChatStore = defineStore('ai-chat', () => {
     activeSession.value = await api.aiSessionController.findById({ id: sessionId })
     sessionList.value[index] = activeSession.value
   }
+
   return {
     isEdit,
     activeSession,

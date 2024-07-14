@@ -36,7 +36,6 @@ public class MessageDemoController {
     // 智谱清言
     private final ZhiPuAiChatModel zhiPuAiChatModel;
     private final ObjectMapper objectMapper;
-    private final VectorStore vectorStore;
     // 模拟数据库存储会话和消息
     private final ChatMemory chatMemory = new InMemoryChatMemory();
 
@@ -126,7 +125,6 @@ public class MessageDemoController {
                 """;
         return ChatClient.create(dashScopeAiChatModel).prompt()
                 .user(prompt)
-                .advisors(new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults(), promptWithContext))
                 .stream()
                 .content()
                 .map(chatResponse -> ServerSentEvent.builder(chatResponse)

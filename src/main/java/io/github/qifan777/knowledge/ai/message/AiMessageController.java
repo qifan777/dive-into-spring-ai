@@ -3,22 +3,21 @@ package io.github.qifan777.knowledge.ai.message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.qifan777.knowledge.ai.agent.Agent;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageInput;
-import io.github.qifan777.knowledge.ai.message.dto.AiMessageWrapper;
-import io.qifan.ai.dashscope.DashScopeAiChatModel;
+import io.github.qifan777.knowledge.ai.message.dto.AiMessageParams;
+import io.github.qifan777.knowledge.ai.session.AiSession;
+import io.github.qifan777.knowledge.ai.session.AiSessionRepository;
+import io.qifan.infrastructure.common.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.babyfish.jimmer.sql.EnableDtoGeneration;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.moonshot.MoonshotChatModel;
-import org.springframework.ai.reader.tika.TikaDocumentReader;
-import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -34,13 +33,14 @@ import java.util.Map;
 @RestController
 @AllArgsConstructor
 @Slf4j
+@EnableDtoGeneration
 public class AiMessageController {
     private final AiMessageChatMemory chatMemory;
-    private final MoonshotChatModel dashScopeAiChatModel;
-    private final VectorStore vectorStore;
+    private final OpenAiChatModel dashScopeAiChatModel;
     private final ObjectMapper objectMapper;
     private final AiMessageRepository messageRepository;
     private final ApplicationContext applicationContext;
+    private final AiSessionRepository aiSessionRepository;
 
     @DeleteMapping("history/{sessionId}")
     public void deleteHistory(@PathVariable String sessionId) {
@@ -62,28 +62,27 @@ public class AiMessageController {
      * @return SSE流
      */
     @PostMapping(value = "chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<String>> chat(@RequestBody AiMessageWrapper input) {
+    public Flux<ServerSentEvent<String>> chat(@RequestBody AiMessageInput input) {
+        AiSession aiSession = aiSessionRepository.findById(input.getSessionId())
+                .orElseThrow(() -> new BusinessException("会话不存在"));
+        AiMessageParams params = aiSession.params();
         String[] functionBeanNames = new String[0];
         // 如果启用Agent则获取Agent的bean
-        if (input.getParams().getEnableAgent()) {
+        if (params.getEnableAgent()) {
             // 获取带有Agent注解的bean
             Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(Agent.class);
             functionBeanNames = new String[beansWithAnnotation.keySet().size()];
             functionBeanNames = beansWithAnnotation.keySet().toArray(functionBeanNames);
         }
         return ChatClient.create(dashScopeAiChatModel).prompt()
-                .system(promptSystemSpec -> toCsvPrompt(promptSystemSpec, input.getParams().getFile(), input.getParams().getEnableProfession()))
-                .user(promptUserSpec -> toPrompt(promptUserSpec, input.getMessage()))
+                .system(promptSystemSpec -> toCsvPrompt(promptSystemSpec, params))
+                .user(promptUserSpec -> toPrompt(promptUserSpec, input))
                 // agent列表
                 .functions(functionBeanNames)
                 .advisors(advisorSpec -> {
                     // 使用历史消息
-                    useChatHistory(advisorSpec, input.getMessage().getSessionId());
+                    useChatHistory(advisorSpec, input.getSessionId());
                     // 如果启用向量数据库
-                    if (input.getParams().getEnableVectorStore()) {
-                        // 使用向量数据库w
-                        useVectorStore(advisorSpec);
-                    }
                 })
                 .stream()
                 .chatResponse()
@@ -111,9 +110,10 @@ public class AiMessageController {
     }
 
     @SneakyThrows
-    public void toCsvPrompt(ChatClient.PromptSystemSpec spec, String data, Boolean enableProfession) {
-        if (!StringUtils.hasText(data)) return;
-        UrlResource urlResource = new UrlResource(data);
+    public void toCsvPrompt(ChatClient.PromptSystemSpec spec, AiMessageParams params) {
+        String file = params.getFile();
+        if (!StringUtils.hasText(file)) return;
+        UrlResource urlResource = new UrlResource(file);
         byte[] bytes = urlResource.getInputStream().readAllBytes();
         String content = new String(bytes);
         Message message = new PromptTemplate("""
@@ -138,15 +138,5 @@ public class AiMessageController {
         advisorSpec.advisors(new MessageChatMemoryAdvisor(chatMemory, sessionId, 10));
     }
 
-    public void useVectorStore(ChatClient.AdvisorSpec advisorSpec) {
-        // question_answer_context是一个占位符，会替换成向量数据库中查询到的文档。QuestionAnswerAdvisor会替换。
-        String promptWithContext = """
-                下面是上下文信息
-                ---------------------
-                {question_answer_context}
-                ---------------------
-                给定的上下文和提供的历史信息，而不是事先的知识，回复用户的意见。如果答案不在上下文中，告诉用户你不能回答这个问题。
-                """;
-        advisorSpec.advisors(new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults(), promptWithContext));
-    }
+
 }

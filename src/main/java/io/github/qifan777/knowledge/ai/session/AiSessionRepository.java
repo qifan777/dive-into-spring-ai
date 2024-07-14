@@ -9,6 +9,7 @@ import java.util.List;
 public interface AiSessionRepository extends JRepository<AiSession, String> {
     AiSessionTable t = AiSessionTable.$;
     AiSessionFetcher FETCHER = AiSessionFetcher.$.allScalarFields()
+            .params()
             .messages(AiMessageFetcher.$.allScalarFields().sessionId());
 
     default List<AiSession> findByUser() {

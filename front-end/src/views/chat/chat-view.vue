@@ -1,16 +1,17 @@
 <script lang="ts" setup>
-import {nextTick, onMounted, ref} from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import SessionItem from './components/session-item.vue'
-import {ChatRound, Close, Delete, EditPen} from '@element-plus/icons-vue'
+import { ChatRound, Close, Delete, EditPen } from '@element-plus/icons-vue'
 import MessageRow from './components/message-row.vue'
 import MessageInput from './components/message-input.vue'
-import {storeToRefs} from 'pinia'
-import {ElIcon, ElMessage, type UploadProps} from 'element-plus'
-import {api} from '@/utils/api-instance'
-import {SSE} from 'sse.js'
-import {type AiMessage, useChatStore} from './store/chat-store'
-import type {AiMessageParams, AiMessageWrapper} from '@/apis/__generated/model/static'
-import type {Result} from "@/typings";
+import { storeToRefs } from 'pinia'
+import { ElIcon, ElMessage, type UploadProps } from 'element-plus'
+import { api } from '@/utils/api-instance'
+import { SSE } from 'sse.js'
+import { type AiMessage, useChatStore } from './store/chat-store'
+import type { AiMessageParams } from '@/apis/__generated/model/static'
+import type { Result } from '@/typings'
+import FeedbackCreateForm from '@/views/feedback/components/feedback-create-form.vue'
 
 type ChatResponse = {
   metadata: {
@@ -30,8 +31,8 @@ type ChatResponse = {
 }
 const API_PREFIX = import.meta.env.VITE_API_PREFIX
 const chatStore = useChatStore()
-const {handleDeleteSession, handleUpdateSession, handleClearMessage} = chatStore
-const {activeSession, sessionList, isEdit} = storeToRefs(chatStore)
+const { handleDeleteSession, handleUpdateSession, handleClearMessage } = chatStore
+const { activeSession, sessionList, isEdit } = storeToRefs(chatStore)
 const messageListRef = ref<InstanceType<typeof HTMLDivElement>>()
 const loading = ref(true)
 
@@ -40,7 +41,7 @@ onMounted(async () => {
   api.aiSessionController.findByUser().then((res) => {
     // 讲会话添加到列表中
     sessionList.value = res.map((row) => {
-      return {...row, checked: false}
+      return { ...row, checked: false }
     })
     // 默认选中的聊天会话是第一个
     if (sessionList.value.length > 0) {
@@ -65,10 +66,11 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
     ElMessage.warning('请创建会话')
     return
   }
+  await handleUpdateSession()
   // 图片/语音
   const medias: AiMessage['medias'] = []
   if (message.image) {
-    medias.push({type: 'image', data: message.image})
+    medias.push({ type: 'image', data: message.image })
   }
   // 用户的提问
   const chatMessage = {
@@ -86,13 +88,12 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
     textContent: '',
     sessionId: activeSession.value.id
   }
-  const body: AiMessageWrapper = {message: chatMessage, params: options.value}
   const evtSource = new SSE(API_PREFIX + '/message/chat', {
     withCredentials: true,
     // 禁用自动启动，需要调用stream()方法才能发起请求
     start: false,
-    headers: {'Content-Type': 'application/json'},
-    payload: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
+    payload: JSON.stringify(chatMessage),
     method: 'POST'
   })
   evtSource.addEventListener('message', async (event: any) => {
@@ -111,9 +112,9 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
     if (finishReason && finishReason.toLowerCase() == 'stop') {
       evtSource.close()
       // 保存用户的提问
-      await api.aiMessageController.save({body: chatMessage})
+      await api.aiMessageController.save({ body: chatMessage })
       // 保存大模型的回复
-      await api.aiMessageController.save({body: responseMessage.value})
+      await api.aiMessageController.save({ body: responseMessage.value })
     }
   })
 
@@ -127,18 +128,22 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
 }
 
 const handleSessionCreate = () => {
-  chatStore.handleCreateSession({name: '新的聊天'})
+  chatStore.handleCreateSession({
+    name: '新的聊天',
+    params: {
+      enableVectorStore: false,
+      enableAgent: false,
+      file: '',
+      enableProfession: false
+    }
+  })
 }
-const options = ref<AiMessageParams>({
-  enableVectorStore: false,
-  enableAgent: false,
-  file: '',
-  enableProfession: false,
-})
 const embeddingLoading = ref(false)
 const onUploadSuccess = (res: Result<{ url: string }>) => {
   embeddingLoading.value = false
-  options.value.file = res.result.url
+  if (activeSession.value) {
+    activeSession.value.params.file = res.result.url
+  }
 }
 const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   embeddingLoading.value = true
@@ -156,22 +161,23 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
         <div class="session-list" v-if="activeSession">
           <!-- for循环遍历会话列表用会话组件显示，并监听点击事件和删除事件。点击时切换到被点击的会话，删除时从会话列表中提出被删除的会话。 -->
           <session-item
-              v-for="session in sessionList"
-              :key="session.id"
-              :active="session.id === activeSession.id"
-              :session="session"
-              class="session"
-              @click="activeSession = session"
-              @delete="handleDeleteSession"
+            v-for="session in sessionList"
+            :key="session.id"
+            :active="session.id === activeSession.id"
+            :session="session"
+            class="session"
+            @click="activeSession = session"
+            @delete="handleDeleteSession"
           ></session-item>
         </div>
         <div class="button-wrapper">
+          <feedback-create-form></feedback-create-form>
           <el-button
-              style="margin-right: 20px"
-              :icon="ChatRound"
-              size="small"
-              @click="handleSessionCreate"
-          >创建会话
+            style="margin-right: 20px"
+            :icon="ChatRound"
+            size="small"
+            @click="handleSessionCreate"
+            >创建会话
           </el-button>
         </div>
       </div>
@@ -184,8 +190,8 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
             <div v-if="isEdit" class="title">
               <!-- 按回车代表确认修改 -->
               <el-input
-                  v-model="activeSession.name"
-                  @keydown.enter="handleUpdateSession"
+                v-model="activeSession.name"
+                @keydown.enter="handleUpdateSession"
               ></el-input>
             </div>
             <!-- 否则正常显示标题 -->
@@ -195,31 +201,31 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
           <!-- 尾部的编辑按钮 -->
           <div class="rear">
             <el-icon :size="20" style="margin-right: 10px">
-              <Delete @click="handleClearMessage(activeSession.id)"/>
+              <Delete @click="handleClearMessage(activeSession.id)" />
             </el-icon>
             <el-icon :size="20">
               <!-- 不处于编辑状态显示编辑按钮 -->
-              <EditPen v-if="!isEdit" @click="isEdit = true"/>
+              <EditPen v-if="!isEdit" @click="isEdit = true" />
               <!-- 处于编辑状态显示取消编辑按钮 -->
               <Close v-else @click="isEdit = false"></Close>
             </el-icon>
           </div>
         </div>
-        <el-divider :border-style="'solid'"/>
+        <el-divider :border-style="'solid'" />
         <div ref="messageListRef" class="message-list">
           <!-- 过渡效果 -->
           <transition-group name="list" v-if="activeSession">
             <message-row
-                v-for="message in activeSession.messages"
-                :key="message.id"
-                :message="message"
+              v-for="message in activeSession.messages"
+              :key="message.id"
+              :message="message"
             ></message-row>
           </transition-group>
         </div>
         <!-- 监听发送事件 -->
         <message-input @send="handleSendMessage" v-if="activeSession"></message-input>
       </div>
-      <div class="option-panel">
+      <div class="option-panel" v-if="activeSession">
         <el-form size="small">
           <!--          <el-form-item>-->
           <!--            <el-upload-->
@@ -240,17 +246,17 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
           <!--          </el-form-item>-->
           <el-form-item>
             <el-upload
-                v-loading="embeddingLoading"
-                :action="`${API_PREFIX}/oss/upload`"
-                :show-file-list="false"
-                :on-success="onUploadSuccess"
-                :before-upload="beforeUpload"
+              v-loading="embeddingLoading"
+              :action="`${API_PREFIX}/oss/upload`"
+              :show-file-list="false"
+              :on-success="onUploadSuccess"
+              :before-upload="beforeUpload"
             >
               <el-button type="primary">上传表格</el-button>
             </el-upload>
           </el-form-item>
           <el-form-item label="专家模式">
-            <el-switch v-model="options.enableProfession"></el-switch>
+            <el-switch v-model="activeSession.params.enableProfession"></el-switch>
           </el-form-item>
         </el-form>
       </div>

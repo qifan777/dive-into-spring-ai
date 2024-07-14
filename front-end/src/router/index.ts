@@ -19,6 +19,10 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterView
+    },
+    {
+      path: '/feedback',
+      component: () => import('@/views/feedback/feedback-view.vue')
     }
   ]
 })

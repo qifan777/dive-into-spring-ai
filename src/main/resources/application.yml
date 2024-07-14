@@ -43,11 +43,9 @@ spring:
       api-key: xxx
     openai:
       api-key: xxx
-      base-url: xxx
       chat:
-        enabled: true
         options:
-          model: gpt-3.5-turbo
+          model: gpt-4o
     zhipuai:
       api-key: xxx
       chat:

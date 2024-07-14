@@ -1,0 +1,20 @@
+export io.github.qifan777.knowledge.feedback.entity.Feedback
+
+input FeedbackCreateInput {
+    #allScalars(Feedback)
+}
+input FeedbackUpdateInput {
+    #allScalars(Feedback)
+    id!
+}
+
+specification FeedbackSpec {
+    #allScalars
+    like/i(content)
+    like/i(id)
+    ge(createdTime)
+    le(createdTime)
+    ge(editedTime)
+    le(editedTime)
+    id(creator)
+}
