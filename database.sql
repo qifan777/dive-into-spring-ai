@@ -43,10 +43,10 @@ CREATE TABLE `ai_message` (
 
 LOCK TABLES `ai_message` WRITE;
 /*!40000 ALTER TABLE `ai_message` DISABLE KEYS */;
-INSERT INTO `ai_message` VALUES ('05c523bf586b422e8f19d32a6bab17b6','2024-06-23 22:08:33.529844','2024-06-23 22:08:33.529844','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','ASSISTANT','今天的日期是2024年06月23日。',NULL,'b495186b9259494792a9fe4ce8807f25');
-INSERT INTO `ai_message` VALUES ('1d14d513ae8c4ffda0fb50df6e24ba77','2024-06-20 22:08:28.389711','2024-06-20 22:08:28.389711','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','USER','C:\\Users\\Administrator\\Desktop\\2023年工作总结及2024年工作展望-林家成.docx，这份文档的内容是什么？','[]','c4d192c4b2de48bcae585f5b9672cd1d');
-INSERT INTO `ai_message` VALUES ('34d65ad69e4b470794da11732fe44a7d','2024-06-23 22:08:33.337776','2024-06-23 22:08:33.337776','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','USER','今天的日期是多少？','[]','b495186b9259494792a9fe4ce8807f25');
-INSERT INTO `ai_message` VALUES ('ba161500bec84b388a6501b3be333b45','2024-06-20 22:08:28.649439','2024-06-20 22:08:28.649439','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','ASSISTANT','2023年的工作总结及2024年工作展望文档内容概要如下：\n\n1、**工作回顾重点：**\n   - 成功运用Python脚本在一经上云项目中实现Oracle脚本批量迁移、实体批量登记等，极大提升了工作效率（速度提升70倍以上），并提前完成年度工作任务。\n   - 领导新智慧工厂项目的前端与后端框架搭建，采用更高效、安全的技术栈，促进团队快速投入业务开发。重构并优化了基础功能模块，如菜单框架、租户管理等，封装为易用组件。\n   - 开发了脚本依赖分析工具，通过SQL语法树解析等技术，有效辅助故障检测、代码规范检查及开发效率，与部门其他系统（如指标库、报表系统）集成，增强功能实用性。\n\n2、**个人成长与进步：**\n   - 今年最大的成就是深入学习了数据开发知识，综合软件开发能力使自己更能满足用户需求，相比同行具有更全面的技能组合。\n\n3、**应对挑战的方法：**\n   - 面对SQL语法解析等高难度任务，通过自学源码、复习理论基础，成功开发出工具，体现了自我驱动力和解决问题的能力。\n\n4、**反思与改进空间：**\n   - 希望能在项目中实践深度学习、机器学习技术，这是未来努力的一个方向。\n\n5、**提质增效的建议：**\n   - 强调代码审查和个人技能提升，鼓励使用先进技术和工具，以及创建持续学习的环境，以保持竞争力。\n\n6、**对当前开发工作的建议：**\n   - 提倡技术分享会议，打破知识孤岛，促进新老员工间的技术交流和学习，平衡稳定与创新的需求。\n\n7、**其他建议：**\n   - 加强跨部门合作，以新智慧工厂项目为范例，推动更多跨领域协作成果。\n\n对于2024年的展望虽未详细展开，但基于上述总结，可能包括深化技术应用、促进团队协作、继续个人技能升级等方面。',NULL,'c4d192c4b2de48bcae585f5b9672cd1d');
+INSERT INTO `ai_message` VALUES ('1b23bdbb845343979ea7daaba5946507','2024-07-13 23:51:15.150897','2024-07-13 23:51:15.150897','dcd256e2412f4162a6a5fcbd5cfedc84','dcd256e2412f4162a6a5fcbd5cfedc84','USER','喋血街头的导游是谁？','[]','87f5e3660dfb4cf7955f5ec08bddb2f0');
+INSERT INTO `ai_message` VALUES ('66539b719d0a4311be41ea8cf8ccf15c','2024-07-13 23:51:55.205343','2024-07-13 23:51:55.205343','dcd256e2412f4162a6a5fcbd5cfedc84','dcd256e2412f4162a6a5fcbd5cfedc84','ASSISTANT','是一动漫格的图片展示了一位着护目镜的角色。他穿着橙色的围巾，背景是一个色的调色板。这种画风和角色的外观让人想到日本动漫中的角色，但具体是哪一部作品或是哪一个角色，无法从图片中确定。',NULL,'87f5e3660dfb4cf7955f5ec08bddb2f0');
+INSERT INTO `ai_message` VALUES ('eb2b0ba539944555a067ef4f023614d3','2024-07-13 23:51:15.605627','2024-07-13 23:51:15.605627','dcd256e2412f4162a6a5fcbd5cfedc84','dcd256e2412f4162a6a5fcbd5cfedc84','ASSISTANT','根据提供的表格数据，《喋血街头》的导演是吴宇森 (John Woo)。',NULL,'87f5e3660dfb4cf7955f5ec08bddb2f0');
+INSERT INTO `ai_message` VALUES ('f0658d3238c646fcb82f9893bb5ec9f1','2024-07-13 23:51:54.851946','2024-07-13 23:51:54.851946','dcd256e2412f4162a6a5fcbd5cfedc84','dcd256e2412f4162a6a5fcbd5cfedc84','USER','这张图片的内容是什么？','[{\"data\": \"https://my-community.oss-cn-qingdao.aliyuncs.com/20240713235121微信图片_20240330115005.jpg\", \"type\": \"image\"}]','87f5e3660dfb4cf7955f5ec08bddb2f0');
 /*!40000 ALTER TABLE `ai_message` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -64,6 +64,7 @@ CREATE TABLE `ai_session` (
   `creator_id` varchar(32) NOT NULL,
   `editor_id` varchar(32) NOT NULL,
   `name` varchar(32) NOT NULL COMMENT '会话名称',
+  `params` json DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -74,10 +75,39 @@ CREATE TABLE `ai_session` (
 
 LOCK TABLES `ai_session` WRITE;
 /*!40000 ALTER TABLE `ai_session` DISABLE KEYS */;
-INSERT INTO `ai_session` VALUES ('b495186b9259494792a9fe4ce8807f25','2024-06-18 22:01:51.459293','2024-06-18 22:01:51.459293','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','新的聊天');
-INSERT INTO `ai_session` VALUES ('c4d192c4b2de48bcae585f5b9672cd1d','2024-06-18 22:01:45.819825','2024-06-18 22:01:45.819317','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','新的聊天');
-INSERT INTO `ai_session` VALUES ('dcd32fd9f7fc4d0fb9a5b7dc9ff0dbc8','2024-06-18 21:57:09.390651','2024-06-18 21:57:09.390651','fe3d0d7d6eb34eb7a6b7985426cf8af7','fe3d0d7d6eb34eb7a6b7985426cf8af7','新的聊天');
+INSERT INTO `ai_session` VALUES ('87f5e3660dfb4cf7955f5ec08bddb2f0','2024-07-13 23:27:46.203755','2024-07-13 23:51:47.403512','dcd256e2412f4162a6a5fcbd5cfedc84','dcd256e2412f4162a6a5fcbd5cfedc84','新的聊天','{\"file\": \"https://my-community.oss-cn-qingdao.aliyuncs.com/20240713235048movie.csv\", \"enableAgent\": false, \"enableProfession\": false, \"enableVectorStore\": false}');
 /*!40000 ALTER TABLE `ai_session` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `feedback`
+--
+
+DROP TABLE IF EXISTS `feedback`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `feedback` (
+  `id` varchar(36) NOT NULL,
+  `created_time` datetime(6) NOT NULL,
+  `edited_time` datetime(6) NOT NULL,
+  `creator_id` varchar(32) NOT NULL,
+  `editor_id` varchar(32) NOT NULL,
+  `content` text NOT NULL,
+  `pictures` json DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `feedback`
+--
+
+LOCK TABLES `feedback` WRITE;
+/*!40000 ALTER TABLE `feedback` DISABLE KEYS */;
+INSERT INTO `feedback` VALUES ('e8f108ce73ec4017b456e69cb9447ebe','2024-07-14 09:39:37.975206','2024-07-14 09:39:37.975206','dcd256e2412f4162a6a5fcbd5cfedc84','dcd256e2412f4162a6a5fcbd5cfedc84','你好','[\"https://my-community.oss-cn-qingdao.aliyuncs.com/20240714093843etl-pipeline.jpg\", \"https://my-community.oss-cn-qingdao.aliyuncs.com/20240714093850微信图片_20240330115005.jpg\"]');
+INSERT INTO `feedback` VALUES ('ea709c4ee8b04a6b871491f3c39b8c76','2024-07-14 09:46:39.526030','2024-07-14 09:46:39.526030','dcd256e2412f4162a6a5fcbd5cfedc84','dcd256e2412f4162a6a5fcbd5cfedc84','反馈测试','[\"https://my-community.oss-cn-qingdao.aliyuncs.com/20240714094626etl-pipeline.jpg\", \"https://my-community.oss-cn-qingdao.aliyuncs.com/20240714094631微信图片_20240330115005.jpg\"]');
+INSERT INTO `feedback` VALUES ('f298675cb4874cdcb76d1f77afb612b2','2024-07-14 09:44:17.459765','2024-07-14 09:44:17.459765','dcd256e2412f4162a6a5fcbd5cfedc84','dcd256e2412f4162a6a5fcbd5cfedc84','你好','[\"https://my-community.oss-cn-qingdao.aliyuncs.com/20240714094412screenshot-1717656203937.png\", \"https://my-community.oss-cn-qingdao.aliyuncs.com/20240714094416微信图片_20240330115005.jpg\"]');
+/*!40000 ALTER TABLE `feedback` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -107,6 +137,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES ('24736e4789f24bf289fbad291c3f835d','2024-06-24 21:51:02.564141','2024-06-24 21:51:02.564141',NULL,NULL,NULL,'13656987995','$2a$10$LhsgAUfNRPD/NQtv/wIN4O5ch9Y8hhkU7X8SvtXQPeiLtlRRCztVa');
 INSERT INTO `user` VALUES ('dcd256e2412f4162a6a5fcbd5cfedc84','2024-05-01 16:52:43.364225','2024-05-19 21:30:34.686818','起凡','https://my-community.oss-cn-qingdao.aliyuncs.com/20240501203628ptwondCGhItP67eb5ac72554b07800b22c542245e457.jpeg','MALE','11111111111','$2a$10$o/DHIt/eAMR175TgDV/PeeuEOpqW1N4Klft6obvs2zqBuiwMgLWOW');
 INSERT INTO `user` VALUES ('fe3d0d7d6eb34eb7a6b7985426cf8af7','2024-06-06 13:23:46.130879','2024-06-06 13:23:46.130817','默认用户',NULL,NULL,'13656987994','$2a$10$q7pey1P1/b3lO9nzFLKOb.ISrX7.lkktMjghwhgvNqvA.EjZZ2mg2');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
@@ -121,4 +152,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-24 21:11:15
+-- Dump completed on 2024-07-14 17:46:43
