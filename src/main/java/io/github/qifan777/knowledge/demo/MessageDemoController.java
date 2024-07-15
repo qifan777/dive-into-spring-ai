@@ -2,8 +2,6 @@ package io.github.qifan777.knowledge.demo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qifan.ai.dashscope.DashScopeAiChatModel;
-import io.qifan.ai.kimi.KimiAiChatModel;
-import io.qifan.ai.qianfan.QianFanAiChatModel;
 import io.qifan.ai.spark.SparkAiChatModel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -15,6 +13,8 @@ import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.moonshot.MoonshotChatModel;
+import org.springframework.ai.qianfan.QianFanChatModel;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.zhipuai.ZhiPuAiChatModel;
@@ -36,9 +36,9 @@ public class MessageDemoController {
     // 讯飞星火
     private final SparkAiChatModel sparkAiChatModel;
     // 百度千帆
-    private final QianFanAiChatModel qianFanAiChatModel;
+    private final QianFanChatModel qianFanAiChatModel;
     // Kimi
-    private final KimiAiChatModel kimiAiChatModel;
+    private final MoonshotChatModel moonshotChatModel;
     // 智谱清言
     private final ZhiPuAiChatModel zhiPuAiChatModel;
     private final ObjectMapper objectMapper;
