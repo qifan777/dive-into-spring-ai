@@ -5,6 +5,7 @@ import io.github.qifan777.knowledge.infrastructure.jimmer.BaseEntity;
 import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.babyfish.jimmer.sql.*;
 import org.springframework.ai.chat.messages.MessageType;
 
@@ -43,7 +44,7 @@ public interface AiMessage extends BaseEntity {
     AiSession session();
 
     @Data
-    @AllArgsConstructor
+    @Accessors(chain = true)
     class Media {
         public String type;
         public String data;

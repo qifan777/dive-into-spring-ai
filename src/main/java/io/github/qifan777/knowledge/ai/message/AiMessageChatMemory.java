@@ -1,13 +1,11 @@
 package io.github.qifan777.knowledge.ai.message;
 
 import cn.hutool.core.collection.CollectionUtil;
+import io.qifan.infrastructure.common.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.messages.AbstractMessage;
-import org.springframework.ai.chat.messages.Media;
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.MessageType;
+import org.springframework.ai.chat.messages.*;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -65,7 +63,9 @@ public class AiMessageChatMemory implements ChatMemory {
                 List<AiMessage.Media> mediaList = message
                         .getMedia()
                         .stream()
-                        .map(media -> new AiMessage.Media(media.getMimeType().getType(), media.getData().toString()))
+                        .map(media -> new AiMessage.Media()
+                                .setType(media.getMimeType().getType())
+                                .setData(media.getData().toString()))
                         .toList();
                 draft.setMedias(mediaList);
             }
@@ -77,17 +77,20 @@ public class AiMessageChatMemory implements ChatMemory {
         if (!CollectionUtil.isEmpty(aiMessage.medias())) {
             mediaList = aiMessage.medias().stream().map(AiMessageChatMemory::toSpringAiMedia).toList();
         }
-        return new DefaultMessage(aiMessage.type(), aiMessage.textContent(), mediaList);
+        if (aiMessage.type().equals(MessageType.ASSISTANT)) {
+            return new AssistantMessage(aiMessage.textContent());
+        }
+        if (aiMessage.type().equals(MessageType.USER)) {
+            return new UserMessage(aiMessage.textContent(), mediaList);
+        }
+        if (aiMessage.type().equals(MessageType.SYSTEM)) {
+            return new SystemMessage(aiMessage.textContent());
+        }
+        throw new BusinessException("不支持的消息类型");
     }
 
     @SneakyThrows
     public static Media toSpringAiMedia(AiMessage.Media media) {
         return new Media(new MediaType(media.getType()), new URL(media.getData()));
-    }
-
-    public static class DefaultMessage extends AbstractMessage {
-        protected DefaultMessage(MessageType messageType, String textContent, List<Media> media) {
-            super(messageType, textContent, media);
-        }
     }
 }
