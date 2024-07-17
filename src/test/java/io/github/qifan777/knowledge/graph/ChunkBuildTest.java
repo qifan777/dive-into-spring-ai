@@ -2,6 +2,8 @@ package io.github.qifan777.knowledge.graph;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.qifan777.knowledge.graph.chunk.Chunk;
+import io.github.qifan777.knowledge.graph.chunk.ChunkRepository;
 import io.qifan.ai.dashscope.DashScopeAiEmbeddingModel;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +23,7 @@ import java.util.List;
 
 @Slf4j
 @SpringBootTest
-public class BuildKGTest {
+public class ChunkBuildTest {
 
     @Autowired
     ChunkRepository chunkRepository;
@@ -32,15 +34,39 @@ public class BuildKGTest {
     @Autowired
     Neo4jVectorStore vectorStore;
 
-    @SneakyThrows
     @Test
-    public void readFiles() {
+    @SneakyThrows
+    public void createChunk() {
         val fileDir = new File("F:\\workspace\\code\\learn\\sec-edgar-notebooks\\data\\sample\\form10k");
         val files = fileDir.listFiles();
         for (File file : files) {
             if (!file.getName().contains(".json")) continue;
             chunkRepository.saveAll(fileToChunkList(file));
         }
+    }
+
+    @SneakyThrows
+    public List<Chunk> fileToChunkList(File file) {
+        ObjectNode node = new ObjectMapper().readValue(file, ObjectNode.class);
+        String[] items = {"item1", "item1a", "item7", "item7a"};
+        List<Chunk> chunks = new ArrayList<>();
+        for (String item : items) {
+            String text = node.get(item).asText();
+            // 切割文本成
+            List<Document> documents = new TokenTextSplitter().split(new Document(text));
+            // 最多不超过20 Chunk
+            for (int chunkSeqId = 0; chunkSeqId < Integer.min(documents.size(), 20); chunkSeqId++) {
+                String formId = file.getName().replace(".json", "");
+                chunks.add(Chunk.builder()
+                        .id("%s-%s-chunk%04d".formatted(formId, item, chunkSeqId))
+                        .chunkSeqId(chunkSeqId)
+                        .formId(formId)
+                        .text(documents.get(chunkSeqId).getContent())
+                        .item(item)
+                        .build());
+            }
+        }
+        return chunks;
     }
 
     @Test
@@ -97,30 +123,5 @@ public class BuildKGTest {
         log.info("{}", waitToEmbedList.size());
     }
 
-    @SneakyThrows
-    public List<Chunk> fileToChunkList(File file) {
-        ObjectNode node = new ObjectMapper().readValue(file, ObjectNode.class);
-        String[] items = {"item1", "item1a", "item7", "item7a"};
-        List<Chunk> chunks = new ArrayList<>();
-        for (String item : items) {
-            String text = node.get(item).asText();
-            List<Document> documents = new TokenTextSplitter().split(new Document(text));
-            for (int chunkSeqId = 0; chunkSeqId < Integer.min(documents.size(), 20); chunkSeqId++) {
-                String formId = file.getName().replace(".json", "");
-                chunks.add(Chunk.builder()
-                        .id("%s-%s-chunk%s:04d".formatted(formId, item, chunkSeqId))
-                        .chunkSeqId(chunkSeqId)
-                        .formId(formId)
-                        .text(documents.get(chunkSeqId).getContent())
-                        .item(item)
-                        .names(node.get("names").asText())
-                        .cik(node.get("cik").asText())
-                        .cusip6(node.get("cusip6").asText())
-                        .source(node.get("source").asText())
-                        .build());
-            }
-        }
-        return chunks;
-    }
 
 }

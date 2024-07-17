@@ -1,4 +1,4 @@
-package io.github.qifan777.knowledge.graph;
+package io.github.qifan777.knowledge.graph.manager;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

@@ -4,6 +4,11 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.event.SyncReadListener;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.qifan777.knowledge.graph.company.Company;
+import io.github.qifan777.knowledge.graph.company.CompanyRepository;
+import io.github.qifan777.knowledge.graph.manager.Manager;
+import io.github.qifan777.knowledge.graph.manager.ManagerRepository;
+import io.github.qifan777.knowledge.graph.model.Form13;
 import io.qifan.infrastructure.common.exception.BusinessException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -77,10 +82,10 @@ public class CompanyAndInvestContextTest {
             // 公司的名称可能有多个
             List<String> names = list.stream().map(Form13::getCompanyName).distinct().toList();
 
-            return new Company().setCusip6(cusip6)
-                    .setCusips(cusipList)
-                    .setNames(names)
-                    .setName(names.get(0));
+            return Company.builder()
+                    .names(names)
+                    .name(names.get(0))
+                    .build();
         }).toList();
 
 
