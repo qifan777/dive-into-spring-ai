@@ -5,15 +5,15 @@ import lombok.experimental.Accessors;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
+import java.util.List;
+
 @Accessors(chain = true)
 @Data
 @Node
-public class Form {
+public class Company {
     @Id
-    private String id;
-    private String names;
-    private String cik;
     private String cusip6;
-    private String source;
-    private String fullText;
+    private List<String> cusips;
+    private List<String> names;
+    private String name;
 }

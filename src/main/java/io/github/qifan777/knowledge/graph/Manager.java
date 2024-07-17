@@ -8,12 +8,9 @@ import org.springframework.data.neo4j.core.schema.Node;
 @Accessors(chain = true)
 @Data
 @Node
-public class Form {
+public class Manager {
     @Id
-    private String id;
-    private String names;
     private String cik;
-    private String cusip6;
-    private String source;
-    private String fullText;
+    private String name;
+    private String address;
 }
