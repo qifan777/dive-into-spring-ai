@@ -61,7 +61,6 @@ spring:
     vectorstore:
       redis:
         uri: redis://default:123456@localhost:6379
-
 server:
   port: 9902
 
@@ -92,6 +91,12 @@ oss:
     access-key-secret: xxx
     endpoint: xxx
     bucket-name: xxx
+  # 腾讯云oss配置
+  tencent:
+    bucket: xx
+    region: xx
+    secret-id: xx
+    secret-key: xx
 jimmer:
   dialect: org.babyfish.jimmer.sql.dialect.MySqlDialect
   show-sql: true

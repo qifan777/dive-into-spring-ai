@@ -31,7 +31,9 @@ import java.util.Map;
 @Slf4j
 public class AiMessageController {
     private final AiMessageChatMemory chatMemory;
-    private final DashScopeAiChatModel dashScopeAiChatModel;
+    private final DashScopeAiChatModel chatModel;
+    //图片理解
+//    private final DashScopeAiVLChatModel chatModel;
     private final VectorStore vectorStore;
     private final ObjectMapper objectMapper;
     private final AiMessageRepository messageRepository;
@@ -66,7 +68,7 @@ public class AiMessageController {
             functionBeanNames = new String[beansWithAnnotation.keySet().size()];
             functionBeanNames = beansWithAnnotation.keySet().toArray(functionBeanNames);
         }
-        return ChatClient.create(dashScopeAiChatModel).prompt()
+        return ChatClient.create(chatModel).prompt()
                 .user(promptUserSpec -> toPrompt(promptUserSpec, input.getMessage()))
                 // agent列表
                 .functions(functionBeanNames)

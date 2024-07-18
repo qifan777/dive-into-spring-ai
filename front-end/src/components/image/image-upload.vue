@@ -13,9 +13,9 @@ export default defineComponent({
   emits: ['update:modelValue'],
   setup(props, { emit }) {
     const loading = ref(false)
-    const handleImageSuccess: UploadProps['onSuccess'] = (response: Result<{ url: string }>) => {
+    const handleImageSuccess: UploadProps['onSuccess'] = (response: Result<string>) => {
       loading.value = false
-      emit('update:modelValue', response.result.url)
+      emit('update:modelValue', response.result)
     }
     const types = ['image/png', 'image/jpeg', 'image/webp']
 

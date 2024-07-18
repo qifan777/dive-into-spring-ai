@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const images = computed(() => {
   const medias = props.message.medias || []
-  return medias.filter((media) => media.type === 'IMAGE').map((media) => media.data)
+  return medias.filter((media) => media.type === 'image').map((media) => media.data)
 })
 </script>
 
