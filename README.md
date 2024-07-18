@@ -1,10 +1,12 @@
 # 项目介绍
 
+本项目使用SpringAI教学，包含了SSE流/Agent智能体/FunctionCall/Embedding/VectorDatabase/RAG/Graph RAG/历史消息/图片生成/图片理解
+
 ![项目内容](./front-end/src/assets/cover.png)
 
 ![知识点](./front-end/src/assets/SrpingAI知识点.png)
 
-SpringAI教程包含Agent（智能体）/SSE流/FunctionCall/Embedding/VectorDatabase/RAG/历史消息/图片理解/等知识点。
+
 
 [文档地址](https://www.jarcheng.top/blog/project/spring-ai/intro.html)
 [视频地址](https://www.bilibili.com/video/BV14y411q7RN/)
