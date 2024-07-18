@@ -5,6 +5,7 @@ import io.github.qifan777.knowledge.ai.agent.Agent;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageInput;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageWrapper;
 import io.qifan.ai.dashscope.DashScopeAiChatModel;
+import io.qifan.ai.dashscope.DashScopeAiVLChatModel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
