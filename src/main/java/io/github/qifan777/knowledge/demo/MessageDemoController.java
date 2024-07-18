@@ -36,7 +36,7 @@ public class MessageDemoController {
     // 讯飞星火
     private final SparkAiChatModel sparkAiChatModel;
     // 百度千帆
-    private final QianFanChatModel qianFanAiChatModel;
+    private final QianFanChatModel qianFanChatModel;
     // Kimi
     private final MoonshotChatModel moonshotChatModel;
     // 智谱清言

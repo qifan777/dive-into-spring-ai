@@ -42,8 +42,9 @@ public class CompanyController {
     public void createFiledRelationship() {
         // 创建公司和form关系
         neo4jClient.query("""
-                        match (com:Company), (f:Form) where com.cusip6 = f.cusip6
-                        merge (com)-[:FILED]->(form)
+                        MATCH (com:Company), (form:Form)
+                          WHERE com.cusip6 = form.cusip6
+                        MERGE (com)-[:FILED]->(form)
                         """)
                 .run();
     }
