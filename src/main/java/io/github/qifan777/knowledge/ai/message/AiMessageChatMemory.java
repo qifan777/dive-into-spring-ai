@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.*;
+import org.springframework.ai.model.Media;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -59,8 +60,9 @@ public class AiMessageChatMemory implements ChatMemory {
                     .setTextContent(message.getContent())
                     .setType(message.getMessageType())
                     .setMedias(new ArrayList<>());
-            if (!CollectionUtil.isEmpty(message.getMedia())) {
-                List<AiMessage.Media> mediaList = message
+            if (message instanceof UserMessage userMessage &&
+                    !CollectionUtil.isEmpty(userMessage.getMedia())) {
+                List<AiMessage.Media> mediaList = ((UserMessage) message)
                         .getMedia()
                         .stream()
                         .map(media -> new AiMessage.Media()

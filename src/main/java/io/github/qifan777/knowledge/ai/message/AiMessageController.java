@@ -5,16 +5,16 @@ import io.github.qifan777.knowledge.ai.agent.Agent;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageInput;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageWrapper;
 import io.qifan.ai.dashscope.DashScopeAiChatModel;
-import io.qifan.ai.dashscope.DashScopeAiVLChatModel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
-import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.model.Media;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationContext;
@@ -98,10 +98,11 @@ public class AiMessageController {
     public void toPrompt(ChatClient.PromptUserSpec promptUserSpec, AiMessageInput input) {
         // AiMessageInput转成Message
         Message message = AiMessageChatMemory.toSpringAiMessage(input.toEntity());
-        if (!CollectionUtils.isEmpty(message.getMedia())) {
+        if (message instanceof UserMessage userMessage &&
+                !CollectionUtils.isEmpty(userMessage.getMedia())) {
             // 用户发送的图片/语言
-            Media[] medias = new Media[message.getMedia().size()];
-            promptUserSpec.media(message.getMedia().toArray(medias));
+            Media[] medias = new Media[userMessage.getMedia().size()];
+            promptUserSpec.media(userMessage.getMedia().toArray(medias));
         }
         // 用户发送的文本
         promptUserSpec.text(message.getContent());

@@ -7,9 +7,11 @@ import org.springframework.ai.autoconfigure.vectorstore.redis.RedisVectorStorePr
 import org.springframework.ai.vectorstore.RedisVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import redis.clients.jedis.JedisPooled;
 
 @Configuration
 // 禁用SpringAI提供的RedisStack向量数据库的自动配置，会和Redis的配置冲突。
@@ -28,12 +30,14 @@ public class RedisVectorConfig {
      */
     @Bean
     public VectorStore vectorStore(DashScopeAiEmbeddingModel embeddingModel,
-                                   RedisVectorStoreProperties properties) {
-        var config = RedisVectorStore.RedisVectorStoreConfig
-            .builder()
-            .withURI(properties.getUri())
-            .withIndexName(properties.getIndex())
-            .withPrefix(properties.getPrefix()).build();
-        return new RedisVectorStore(config, embeddingModel, properties.isInitializeSchema());
+                                   RedisVectorStoreProperties properties,
+                                   RedisConnectionDetails redisConnectionDetails) {
+        RedisVectorStore.RedisVectorStoreConfig config = RedisVectorStore.RedisVectorStoreConfig.builder().withIndexName(properties.getIndex()).withPrefix(properties.getPrefix()).build();
+        return new RedisVectorStore(config, embeddingModel,
+                new JedisPooled(redisConnectionDetails.getStandalone().getHost(),
+                        redisConnectionDetails.getStandalone().getPort()
+                        , redisConnectionDetails.getUsername(),
+                        redisConnectionDetails.getPassword()),
+                properties.isInitializeSchema());
     }
 }
