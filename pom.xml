@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.qifan777</groupId>
-    <artifactId>KnowledgeBaseChatSpringAI</artifactId>
+    <artifactId>dive-into-spring-ai</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <parent>
