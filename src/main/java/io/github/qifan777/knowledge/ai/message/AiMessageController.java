@@ -13,10 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.sql.EnableDtoGeneration;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.model.Media;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.UrlResource;
@@ -100,10 +101,10 @@ public class AiMessageController {
     public void toPrompt(ChatClient.PromptUserSpec promptUserSpec, AiMessageInput input) {
         // AiMessageInput转成Message
         Message message = AiMessageChatMemory.toSpringAiMessage(input.toEntity());
-        if (!CollectionUtils.isEmpty(message.getMedia())) {
+        if (message instanceof UserMessage userMessage&& !CollectionUtils.isEmpty(userMessage.getMedia())) {
             // 用户发送的图片/语言
-            Media[] medias = new Media[message.getMedia().size()];
-            promptUserSpec.media(message.getMedia().toArray(medias));
+            Media[] medias = new Media[userMessage.getMedia().size()];
+            promptUserSpec.media(userMessage.getMedia().toArray(medias));
         }
         // 用户发送的文本
         promptUserSpec.text(message.getContent());
