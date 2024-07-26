@@ -58,6 +58,9 @@ spring:
     # kimi
     moonshot:
       api-key: xxx
+    vectorstore:
+      redis:
+        initialize-schema: true
 server:
   port: 9902
 
