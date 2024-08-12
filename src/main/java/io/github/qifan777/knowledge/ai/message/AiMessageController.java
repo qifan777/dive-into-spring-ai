@@ -63,7 +63,8 @@ public class AiMessageController {
      * 为了支持文件问答，需要同时接收json（AiMessageWrapper json体）和 MultipartFile（文件）
      * Content-Type 从 application/json 修改为 multipart/form-data
      * 之前接收请求参数是用@RequestBody, 现在使用@RequestPart 接收json字符串再手动转成AiMessageWrapper.
-     * SpringBoot的@RequestPart是支持自动将Json字符串转换为Java对象，但是由于前端FormData无法设置Part的Content-Type，所以只能手动转json字符串再转成Java对象。
+     * SpringMVC的@RequestPart是支持自动将Json字符串转换为Java对象，也就是说可以等效`@RequestBody`，
+     * 但是由于前端FormData无法设置Part的Content-Type，所以只能手动转json字符串再转成Java对象。
      * @param input 消息包含文本信息，会话id，多媒体信息（图片语言）。参考src/main/dto/AiMessage.dto
      * @param file  文件问答
      * @return SSE流
@@ -89,7 +90,7 @@ public class AiMessageController {
                 .advisors(advisorSpec -> {
                     // 使用历史消息
                     useChatHistory(advisorSpec, aiMessageWrapper.getMessage().getSessionId());
-                    // 使用向量数据库w
+                    // 使用向量数据库
                     useVectorStore(advisorSpec, aiMessageWrapper.getParams().getEnableVectorStore());
                 })
                 .stream()
