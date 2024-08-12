@@ -14,14 +14,18 @@ import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.model.Media;
+import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 import java.util.Map;
@@ -56,31 +60,37 @@ public class AiMessageController {
     }
 
     /**
+     * 为了支持文件问答，需要同时接收json（AiMessageWrapper json体）和 MultipartFile（文件）
+     * Content-Type 从 application/json 修改为 multipart/form-data
+     * 之前接收请求参数是用@RequestBody, 现在使用@RequestPart 接收json字符串再手动转成AiMessageWrapper.
+     * SpringBoot的@RequestPart是支持自动将Json字符串转换为Java对象，但是由于前端FormData无法设置Part的Content-Type，所以只能手动转json字符串再转成Java对象。
      * @param input 消息包含文本信息，会话id，多媒体信息（图片语言）。参考src/main/dto/AiMessage.dto
+     * @param file  文件问答
      * @return SSE流
      */
+    @SneakyThrows
     @PostMapping(value = "chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<String>> chat(@RequestBody AiMessageWrapper input) {
+    public Flux<ServerSentEvent<String>> chat(@RequestPart String input, @RequestPart(required = false) MultipartFile file) {
+        AiMessageWrapper aiMessageWrapper = objectMapper.readValue(input, AiMessageWrapper.class);
         String[] functionBeanNames = new String[0];
         // 如果启用Agent则获取Agent的bean
-        if (input.getParams().getEnableAgent()) {
+        if (aiMessageWrapper.getParams().getEnableAgent()) {
             // 获取带有Agent注解的bean
             Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(Agent.class);
             functionBeanNames = new String[beansWithAnnotation.keySet().size()];
             functionBeanNames = beansWithAnnotation.keySet().toArray(functionBeanNames);
         }
         return ChatClient.create(chatModel).prompt()
-                .user(promptUserSpec -> toPrompt(promptUserSpec, input.getMessage()))
+                // 启用文件问答
+                .system(promptSystemSpec -> useFile(promptSystemSpec, file))
+                .user(promptUserSpec -> toPrompt(promptUserSpec, aiMessageWrapper.getMessage()))
                 // agent列表
                 .functions(functionBeanNames)
                 .advisors(advisorSpec -> {
                     // 使用历史消息
-                    useChatHistory(advisorSpec, input.getMessage().getSessionId());
-                    // 如果启用向量数据库
-                    if (input.getParams().getEnableVectorStore()) {
-                        // 使用向量数据库w
-                        useVectorStore(advisorSpec);
-                    }
+                    useChatHistory(advisorSpec, aiMessageWrapper.getMessage().getSessionId());
+                    // 使用向量数据库w
+                    useVectorStore(advisorSpec, aiMessageWrapper.getParams().getEnableVectorStore());
                 })
                 .stream()
                 .chatResponse()
@@ -99,7 +109,7 @@ public class AiMessageController {
         // AiMessageInput转成Message
         Message message = AiMessageChatMemory.toSpringAiMessage(input.toEntity());
         if (message instanceof UserMessage userMessage &&
-                !CollectionUtils.isEmpty(userMessage.getMedia())) {
+            !CollectionUtils.isEmpty(userMessage.getMedia())) {
             // 用户发送的图片/语言
             Media[] medias = new Media[userMessage.getMedia().size()];
             promptUserSpec.media(userMessage.getMedia().toArray(medias));
@@ -116,7 +126,8 @@ public class AiMessageController {
         advisorSpec.advisors(new MessageChatMemoryAdvisor(chatMemory, sessionId, 10));
     }
 
-    public void useVectorStore(ChatClient.AdvisorSpec advisorSpec) {
+    public void useVectorStore(ChatClient.AdvisorSpec advisorSpec, Boolean enableVectorStore) {
+        if (!enableVectorStore) return;
         // question_answer_context是一个占位符，会替换成向量数据库中查询到的文档。QuestionAnswerAdvisor会替换。
         String promptWithContext = """
                 下面是上下文信息
@@ -127,4 +138,19 @@ public class AiMessageController {
                 """;
         advisorSpec.advisors(new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults(), promptWithContext));
     }
+
+    @SneakyThrows
+    public void useFile(ChatClient.PromptSystemSpec spec, MultipartFile file) {
+        if (file == null) return;
+        String content = new TikaDocumentReader(new InputStreamResource(file.getInputStream())).get().get(0).getContent();
+        Message message = new PromptTemplate("""
+                已下内容是额外的知识，在你回答问题时可以参考下面的内容
+                ---------------------
+                {context}
+                ---------------------
+                """)
+                .createMessage(Map.of("context", content));
+        spec.text(message.getContent());
+    }
+
 }

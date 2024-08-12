@@ -20,7 +20,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-ai.version>1.0.0-SNAPSHOT</spring-ai.version>
-        <uni-ai.version>0.1.7</uni-ai.version>
+        <uni-ai.version>0.1.8</uni-ai.version>
         <jimmer.version>0.8.134</jimmer.version>
         <hutool.version>5.8.25</hutool.version>
         <sa-token.version>1.37.0</sa-token.version>

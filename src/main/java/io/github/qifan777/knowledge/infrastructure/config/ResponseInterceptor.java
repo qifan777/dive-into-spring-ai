@@ -40,7 +40,7 @@ public class ResponseInterceptor implements ResponseBodyAdvice<Object> {
             return objectMapper.writeValueAsString(R.ok(body));
         }
         if (body == null) {
-            return body;
+            return null;
         }
         log.debug("响应结果：{}", body);
         return R.ok(body);

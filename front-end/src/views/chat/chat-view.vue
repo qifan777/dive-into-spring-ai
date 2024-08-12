@@ -5,7 +5,7 @@ import { ChatRound, Close, Delete, EditPen } from '@element-plus/icons-vue'
 import MessageRow from './components/message-row.vue'
 import MessageInput from './components/message-input.vue'
 import { storeToRefs } from 'pinia'
-import { ElIcon, ElMessage, type UploadProps } from 'element-plus'
+import { ElIcon, ElMessage, type UploadProps, type UploadUserFile } from 'element-plus'
 import { api } from '@/utils/api-instance'
 import { SSE } from 'sse.js'
 import { type AiMessage, useChatStore } from './store/chat-store'
@@ -55,6 +55,7 @@ onMounted(async () => {
 const responseMessage = ref<AiMessage>({
   id: new Date().getTime().toString(),
   type: 'ASSISTANT',
+  medias: [],
   textContent: '',
   sessionId: ''
 })
@@ -81,17 +82,23 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
   // 新建一个ChatGPT回复对象，不能重复使用同一个对象。
   responseMessage.value = {
     id: new Date().getTime().toString(),
+    medias: [],
     type: 'ASSISTANT',
     textContent: '',
     sessionId: activeSession.value.id
   }
   const body: AiMessageWrapper = { message: chatMessage, params: options.value }
+  const form = new FormData()
+  form.set('input', JSON.stringify(body))
+
+  if (fileList.value.length && fileList.value[0].raw) {
+    form.append('file', fileList.value[0].raw)
+  }
   const evtSource = new SSE(API_PREFIX + '/message/chat', {
     withCredentials: true,
     // 禁用自动启动，需要调用stream()方法才能发起请求
     start: false,
-    headers: { 'Content-Type': 'application/json' },
-    payload: JSON.stringify(body),
+    payload: form as any,
     method: 'POST'
   })
   evtSource.addEventListener('message', async (event: any) => {
@@ -137,10 +144,11 @@ const onUploadSuccess = () => {
   embeddingLoading.value = false
   ElMessage.success('上传成功')
 }
-const beforeUpload: UploadProps['beforeUpload'] = (file) => {
+const beforeUpload: UploadProps['beforeUpload'] = () => {
   embeddingLoading.value = true
   return true
 }
+const fileList = ref<UploadUserFile[]>([])
 </script>
 <template>
   <!-- 最外层页面于窗口同宽，使聊天面板居中 -->
@@ -234,6 +242,13 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
           </el-form-item>
           <el-form-item label="agent（智能体）">
             <el-switch v-model="options.enableAgent"></el-switch>
+          </el-form-item>
+          <el-form-item label="文件">
+            <div class="upload">
+              <el-upload v-model:file-list="fileList" :auto-upload="false" :limit="1">
+                <el-button type="primary">上传文本文件</el-button>
+              </el-upload>
+            </div>
           </el-form-item>
         </el-form>
       </div>
@@ -362,6 +377,10 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
       width: 200px;
       padding: 20px;
       border-left: 1px solid rgba(black, 0.07);
+
+      .upload {
+        width: 160px;
+      }
     }
   }
 }
