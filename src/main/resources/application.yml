@@ -45,6 +45,8 @@ spring:
         model: qwen-max
       embedding:
         model: text-embedding-v2
+      image:
+        model: wanx-v1
     # 百度千帆
     qian-fan:
       api-key: xxx

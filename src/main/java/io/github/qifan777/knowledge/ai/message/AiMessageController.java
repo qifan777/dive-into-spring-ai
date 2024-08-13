@@ -5,9 +5,13 @@ import io.github.qifan777.knowledge.ai.agent.Agent;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageInput;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageWrapper;
 import io.qifan.ai.dashscope.DashScopeAiChatModel;
+import io.qifan.ai.dashscope.DashScopeAiImagModel;
+import io.qifan.ai.dashscope.DashScopeAiImageOptions;
+import io.qifan.ai.dashscope.api.DashScopeAiImageApi;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
@@ -15,6 +19,7 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.model.Media;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.vectorstore.SearchRequest;
@@ -37,6 +42,7 @@ import java.util.Map;
 public class AiMessageController {
     private final AiMessageChatMemory chatMemory;
     private final DashScopeAiChatModel chatModel;
+    private final DashScopeAiImageApi imageApi;
     //图片理解
 //    private final DashScopeAiVLChatModel chatModel;
     private final VectorStore vectorStore;
@@ -59,12 +65,21 @@ public class AiMessageController {
         messageRepository.save(input.toEntity());
     }
 
+    @PostMapping("chat/image")
+    public String textToImageChat(@RequestBody AiMessageInput input) {
+        val dashScopeAiImageOptions = new DashScopeAiImageOptions();
+        new DashScopeAiImageOptions().setModel("wanx-v1");
+        val dashScopeAiImagModel = new DashScopeAiImagModel(imageApi, dashScopeAiImageOptions);
+        return dashScopeAiImagModel.call(new ImagePrompt(input.getTextContent())).getResult().getOutput().getUrl();
+    }
+
     /**
      * 为了支持文件问答，需要同时接收json（AiMessageWrapper json体）和 MultipartFile（文件）
      * Content-Type 从 application/json 修改为 multipart/form-data
      * 之前接收请求参数是用@RequestBody, 现在使用@RequestPart 接收json字符串再手动转成AiMessageWrapper.
      * SpringMVC的@RequestPart是支持自动将Json字符串转换为Java对象，也就是说可以等效`@RequestBody`，
      * 但是由于前端FormData无法设置Part的Content-Type，所以只能手动转json字符串再转成Java对象。
+     *
      * @param input 消息包含文本信息，会话id，多媒体信息（图片语言）。参考src/main/dto/AiMessage.dto
      * @param file  文件问答
      * @return SSE流
