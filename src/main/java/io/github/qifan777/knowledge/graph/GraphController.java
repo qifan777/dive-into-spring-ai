@@ -1,5 +1,6 @@
 package io.github.qifan777.knowledge.graph;
 
+import io.github.qifan777.knowledge.graph.chunk.ChunkController;
 import io.qifan.ai.dashscope.DashScopeAiChatModel;
 import io.qifan.ai.dashscope.DashScopeAiEmbeddingModel;
 import io.qifan.infrastructure.common.exception.BusinessException;
@@ -36,7 +37,7 @@ public class GraphController {
 
     @GetMapping(value = "chunk/rag")
     public String chunkRag(@RequestParam String query) {
-        List<Double> embed = embeddingModel.embed(query);
+        List<Double> embed = ChunkController.floatsToDoubles(embeddingModel.embed(query));
         String result = neo4jClient.query("""
                         CALL db.index.vector.queryNodes('form_10k_chunks', 1, $embedding)
                         yield node, score
@@ -55,7 +56,7 @@ public class GraphController {
 
     @GetMapping(value = "manager/rag")
     public String managerRag(@RequestParam String query) {
-        List<Double> embed = embeddingModel.embed(query);
+        List<Double> embed = ChunkController.floatsToDoubles(embeddingModel.embed(query));
         var result = neo4jClient.query("""
                         CALL db.index.vector.queryNodes('form_10k_chunks', 1, $embedding)
                         YIELD node, score

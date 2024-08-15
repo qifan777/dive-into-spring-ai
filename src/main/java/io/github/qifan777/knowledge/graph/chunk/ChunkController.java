@@ -103,7 +103,7 @@ public class ChunkController {
     @PostMapping("embedding")
     public void createEmbedding() {
         // 随便将一段文本转成向量，看看这个嵌入模型的向量维度是多少
-        int dimension = embeddingModel.embed("你好").size();
+        int dimension = embeddingModel.embed("你好").length;
 
         // 在Chunk节点创建索引，使用cosine求向量之间的相似度
         neo4jClient.query("""
@@ -118,12 +118,16 @@ public class ChunkController {
                 .run();
         // 对那些没有嵌入的Chunk进行embedding
         List<Chunk> waitToEmbedList = chunkRepository.findByTextEmbeddingIsNull();
-        waitToEmbedList.forEach(chunk -> {
-            //  调用嵌入模型将文本转向量
-            chunk.setTextEmbedding(embeddingModel.embed(chunk.getText()));
-        });
+        waitToEmbedList.forEach(chunk -> chunk.setTextEmbedding(floatsToDoubles(embeddingModel.embed(chunk.getText()))));
         chunkRepository.saveAll(waitToEmbedList);
     }
 
+    public static List<Double> floatsToDoubles(float[] floats) {
+        List<Double> result = new ArrayList<>(floats.length);
+        for (float f : floats) {
+            result.add((double) f);
+        }
+        return result;
+    }
 
 }
