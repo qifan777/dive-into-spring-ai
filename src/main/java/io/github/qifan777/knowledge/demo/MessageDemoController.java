@@ -1,8 +1,6 @@
 package io.github.qifan777.knowledge.demo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.qifan.ai.dashscope.DashScopeAiChatModel;
-import io.qifan.ai.spark.SparkAiChatModel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.ai.chat.client.ChatClient;
@@ -12,12 +10,10 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.moonshot.MoonshotChatModel;
-import org.springframework.ai.qianfan.QianFanChatModel;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.ai.zhipuai.ZhiPuAiChatModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,17 +26,10 @@ import reactor.core.publisher.Flux;
 @RestController
 @AllArgsConstructor
 public class MessageDemoController {
-    // AI模型基座，可以切换不同的AI厂商模型
-    // 阿里灵积
-    private final DashScopeAiChatModel dashScopeAiChatModel;
-    // 讯飞星火
-    private final SparkAiChatModel sparkAiChatModel;
-    // 百度千帆
-    private final QianFanChatModel qianFanChatModel;
-    // Kimi
-    private final MoonshotChatModel moonshotChatModel;
-    // 智谱清言
-    private final ZhiPuAiChatModel zhiPuAiChatModel;
+
+    private final ChatModel chatModel;
+
+
     private final ObjectMapper objectMapper;
     private final VectorStore vectorStore;
     // 模拟数据库存储会话和消息
@@ -54,7 +43,7 @@ public class MessageDemoController {
      */
     @GetMapping("chat")
     public String chat(@RequestParam String prompt) {
-        ChatClient chatClient = ChatClient.create(dashScopeAiChatModel);
+        ChatClient chatClient = ChatClient.create(chatModel);
         return chatClient.prompt()
                 // 输入单条提示词
                 .user(prompt)
@@ -71,7 +60,7 @@ public class MessageDemoController {
      */
     @GetMapping(value = "chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> chatStream(@RequestParam String prompt) {
-        return ChatClient.create(dashScopeAiChatModel).prompt()
+        return ChatClient.create(chatModel).prompt()
                 // 输入多条消息，可以将历史消息记录传入
                 .messages(new SystemMessage("你是一个Java智能助手，应用你的Java知识帮助用户解决问题或者编写程序"),
                         new UserMessage(prompt))
@@ -103,7 +92,7 @@ public class MessageDemoController {
      */
     @GetMapping(value = "chat/stream/function", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> chatStreamWithFunction(@RequestParam String prompt, @RequestParam String functionName) {
-        return ChatClient.create(zhiPuAiChatModel).prompt()
+        return ChatClient.create(chatModel).prompt()
                 .messages(new UserMessage(prompt))
                 // spring ai会从已注册为bean的function中查找函数，将它添加到请求中。如果成功触发就会调用函数
                 .functions(functionName)
@@ -130,7 +119,7 @@ public class MessageDemoController {
                 ---------------------
                 给定的上下文和提供的历史信息，而不是事先的知识，回复用户的意见。如果答案不在上下文中，告诉用户你不能回答这个问题。
                 """;
-        return ChatClient.create(dashScopeAiChatModel).prompt()
+        return ChatClient.create(chatModel).prompt()
                 .user(prompt)
                 .advisors(new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults(), promptWithContext))
                 .stream()
@@ -154,7 +143,7 @@ public class MessageDemoController {
         // 2. 传入会话id，MessageChatMemoryAdvisor会根据会话id去查找消息。
         // 3. 只需要携带最近10条消息
         var messageChatMemoryAdvisor = new MessageChatMemoryAdvisor(chatMemory, sessionId, 10);
-        return ChatClient.create(dashScopeAiChatModel).prompt()
+        return ChatClient.create(chatModel).prompt()
                 .user(prompt)
                 // MessageChatMemoryAdvisor会在消息发送给大模型之前，从ChatMemory中获取会话的历史消息，然后一起发送给大模型。
                 .advisors(messageChatMemoryAdvisor)

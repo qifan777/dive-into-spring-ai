@@ -4,21 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.qifan777.knowledge.ai.agent.Agent;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageInput;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageWrapper;
-import io.qifan.ai.dashscope.DashScopeAiChatModel;
-import io.qifan.ai.dashscope.DashScopeAiImagModel;
-import io.qifan.ai.dashscope.DashScopeAiImageOptions;
-import io.qifan.ai.dashscope.api.DashScopeAiImageApi;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.image.ImageModel;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.model.Media;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
@@ -41,10 +38,8 @@ import java.util.Map;
 @Slf4j
 public class AiMessageController {
     private final AiMessageChatMemory chatMemory;
-    private final DashScopeAiChatModel chatModel;
-    private final DashScopeAiImageApi imageApi;
-    //图片理解
-//    private final DashScopeAiVLChatModel chatModel;
+    private final ChatModel chatModel;
+    private final ImageModel imageModel;
     private final VectorStore vectorStore;
     private final ObjectMapper objectMapper;
     private final AiMessageRepository messageRepository;
@@ -67,10 +62,7 @@ public class AiMessageController {
 
     @PostMapping("chat/image")
     public String textToImageChat(@RequestBody AiMessageInput input) {
-        val dashScopeAiImageOptions = new DashScopeAiImageOptions();
-        new DashScopeAiImageOptions().setModel("wanx-v1");
-        val dashScopeAiImagModel = new DashScopeAiImagModel(imageApi, dashScopeAiImageOptions);
-        return dashScopeAiImagModel.call(new ImagePrompt(input.getTextContent())).getResult().getOutput().getUrl();
+        return imageModel.call(new ImagePrompt(input.getTextContent())).getResult().getOutput().getUrl();
     }
 
     /**

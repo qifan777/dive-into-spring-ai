@@ -1,9 +1,9 @@
 package io.github.qifan777.knowledge.infrastructure.config;
 
-import io.qifan.ai.dashscope.DashScopeAiEmbeddingModel;
 import lombok.AllArgsConstructor;
 import org.springframework.ai.autoconfigure.vectorstore.redis.RedisVectorStoreAutoConfiguration;
 import org.springframework.ai.autoconfigure.vectorstore.redis.RedisVectorStoreProperties;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.RedisVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -29,7 +29,7 @@ public class RedisVectorConfig {
      * @return vectorStore 向量数据库
      */
     @Bean
-    public VectorStore vectorStore(DashScopeAiEmbeddingModel embeddingModel,
+    public VectorStore vectorStore(EmbeddingModel embeddingModel,
                                    RedisVectorStoreProperties properties,
                                    RedisConnectionDetails redisConnectionDetails) {
         RedisVectorStore.RedisVectorStoreConfig config = RedisVectorStore.RedisVectorStoreConfig.builder().withIndexName(properties.getIndex()).withPrefix(properties.getPrefix()).build();

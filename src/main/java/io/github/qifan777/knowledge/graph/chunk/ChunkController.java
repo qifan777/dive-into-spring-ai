@@ -2,11 +2,11 @@ package io.github.qifan777.knowledge.graph.chunk;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.qifan.ai.dashscope.DashScopeAiEmbeddingModel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +22,7 @@ import java.util.List;
 public class ChunkController {
     private final ChunkRepository chunkRepository;
     private final Neo4jClient neo4jClient;
-    private final DashScopeAiEmbeddingModel embeddingModel;
+    private final EmbeddingModel embeddingModel;
 
     /**
      * 创建Chunk节点，

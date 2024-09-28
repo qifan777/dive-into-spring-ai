@@ -1,13 +1,13 @@
 package io.github.qifan777.knowledge.graph;
 
 import io.github.qifan777.knowledge.graph.chunk.ChunkController;
-import io.qifan.ai.dashscope.DashScopeAiChatModel;
-import io.qifan.ai.dashscope.DashScopeAiEmbeddingModel;
 import io.qifan.infrastructure.common.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,10 +20,8 @@ import java.util.Map;
 @AllArgsConstructor
 @Slf4j
 public class GraphController {
-    // 嵌入模型用灵积
-    private final DashScopeAiEmbeddingModel embeddingModel;
-    // 推荐使用kimi，上下文支持的token数比较大
-    private final DashScopeAiChatModel chatModel;
+    private final EmbeddingModel embeddingModel;
+    private final ChatModel chatModel;
     private final Neo4jClient neo4jClient;
     private final PromptTemplate promptTemplate = new PromptTemplate("""
             Context information is below.

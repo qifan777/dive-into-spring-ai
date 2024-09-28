@@ -19,7 +19,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-ai.version>1.0.0-SNAPSHOT</spring-ai.version>
+        <spring-ai.version>1.0.0-M2</spring-ai.version>
         <uni-ai.version>0.1.9</uni-ai.version>
         <jimmer.version>0.8.134</jimmer.version>
         <hutool.version>5.8.25</hutool.version>
@@ -58,30 +58,29 @@
             <groupId>io.github.qifan777</groupId>
             <artifactId>spring-boot-starter-oss</artifactId>
         </dependency>
+        <!--      根据自己的需要开启响应厂商的配置-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.ai</groupId>-->
+        <!--            <artifactId>spring-ai-moonshot-spring-boot-starter</artifactId>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.ai</groupId>-->
+        <!--            <artifactId>spring-ai-qianfan-spring-boot-starter</artifactId>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.ai</groupId>-->
+        <!--            <artifactId>spring-ai-zhipuai-spring-boot-starter</artifactId>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.ai</groupId>-->
+        <!--            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>-->
+        <!--        </dependency>-->
         <dependency>
-            <groupId>io.github.qifan777</groupId>
-            <artifactId>spring-ai-spark-spring-boot-starter</artifactId>
+            <groupId>com.alibaba.cloud.ai</groupId>
+            <artifactId>spring-ai-alibaba-starter</artifactId>
+            <version>${spring-ai.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-moonshot-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.qifan777</groupId>
-            <artifactId>spring-ai-dashscope-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-qianfan-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-zhipuai-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>

@@ -2,7 +2,8 @@ package io.github.qifan777.knowledge.ai.agent;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import io.qifan.ai.dashscope.DashScopeAiChatModel;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,7 @@ import java.util.function.Function;
 public class ComputerAssistant extends AbstractAgent<ComputerAssistant.Request, String> {
 
 
-    protected ComputerAssistant(DashScopeAiChatModel chatModel) {
+    protected ComputerAssistant(ChatModel chatModel) {
         super(chatModel);
     }
 

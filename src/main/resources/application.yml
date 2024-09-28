@@ -27,37 +27,29 @@ spring:
       password: 12345678
     uri: bolt://localhost:7687
   ai:
-    # 讯飞星火
-    spark:
-      chat:
-        api-key: xxx
-        api-secret: xxx
-        appid: xxx
-        enabled: true
-        options:
-          domain: generalv3.5
-          base-url: https://spark-api.xf-yun.com/v3.5/chat
     # 阿里灵积
     dash-scope:
       api-key: xxx
-      enabled: true
       chat:
-        model: qwen-max
+        options:
+          model: qwen-max
       embedding:
-        model: text-embedding-v2
+        options:
+          model: text-embedding-v2
       image:
-        model: wanx-v1
-    # 百度千帆
+        options:
+          model: wanx-v1
+    # 百度千帆 需要在pom.xml中放开qianfan starter的注释
     qian-fan:
       api-key: xxx
       secret-key: xxx
-    # openai
+    # openai 需要在pom.xml中放开openai starter的注释
     openai:
       api-key: xxx
-    # 智谱清言
+    # 智谱清言 同样
     zhipuai:
       api-key: xxx
-    # kimi
+    # kimi 同样
     moonshot:
       api-key: xxx
     vectorstore:

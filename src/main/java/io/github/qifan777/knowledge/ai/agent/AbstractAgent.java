@@ -1,8 +1,10 @@
 package io.github.qifan777.knowledge.ai.agent;
 
-import io.qifan.ai.dashscope.DashScopeAiChatModel;
+import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.context.annotation.Description;
 import org.springframework.util.StringUtils;
 
@@ -19,7 +21,7 @@ public abstract class AbstractAgent<Req, Resp> implements Function<Req, Resp> {
      *
      * @param chatModel 聊天模型
      */
-    public AbstractAgent(DashScopeAiChatModel chatModel) {
+    public AbstractAgent(ChatModel chatModel) {
         this.client = ChatClient
             .builder(chatModel)
             .defaultFunctions(getFunctions())
