@@ -105,10 +105,7 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
     const response = JSON.parse(event.data) as ChatResponse
     const finishReason = response.result.metadata.finishReason
     if (response.result.output.content) {
-      // dashscope不需要累加回复结果
-      responseMessage.value.textContent = response.result.output.content
-      // 其他模型累加回复结果
-      // responseMessage.value.textContent += response.result.output.content
+      responseMessage.value.textContent += response.result.output.content
       // 滚动到底部
       await nextTick(() => {
         messageListRef.value?.scrollTo(0, messageListRef.value.scrollHeight)

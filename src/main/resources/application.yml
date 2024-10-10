@@ -55,9 +55,15 @@ spring:
     vectorstore:
       redis:
         initialize-schema: true
+code-assistant:
+  project:
+    project-path: F:\workspace\code\opensource\dive-into-spring-ai
+  arthas:
+    url: http://localhost:8563/api
+    password: arthas
+    username: arthas
 server:
   port: 9902
-
 sa-token:
   # token名称 (同时也是cookie名称)
   token-name: token
@@ -75,8 +81,6 @@ sa-token:
   is-log: true
   # 自动续签
   auto-renew: true
-
-
 oss:
   provider: ali_yun
   # 阿里云oss配置
