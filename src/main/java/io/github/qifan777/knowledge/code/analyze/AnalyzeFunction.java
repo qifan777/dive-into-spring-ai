@@ -3,12 +3,12 @@ package io.github.qifan777.knowledge.code.analyze;
 import cn.hutool.core.io.FileUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import io.github.qifan777.knowledge.code.graph.entity.MethodNode;
 import io.github.qifan777.knowledge.code.graph.service.GraphService;
 import io.github.qifan777.knowledge.infrastructure.code.CodeAssistantProperties;
+import io.github.qifan777.knowledge.infrastructure.code.JavaParserUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Slf4j
 public class AnalyzeFunction implements Function<AnalyzeFunction.Request, String> {
-    private final JavaParser javaParser;
     private final CodeAssistantProperties properties;
     private final GraphService graphService;
     // 防止页面多次调用开启多个线程token消耗过多，demo使用单线程
@@ -56,7 +55,7 @@ public class AnalyzeFunction implements Function<AnalyzeFunction.Request, String
     @SneakyThrows
     public Flux<AnalyzeResult> analyze(String filePath) {
         log.info("正在评审文件：{}", filePath);
-        Optional<CompilationUnit> result = javaParser.parse(Path.of(properties.getProject().getProjectPath(), filePath))
+        Optional<CompilationUnit> result = JavaParserUtils.getJavaParser().parse(Path.of(properties.getProject().getProjectPath(), filePath))
                 .getResult();
         return Flux.create(fluxSink -> executor.execute(() -> {
             result.map(compilationUnit -> compilationUnit.findAll(ClassOrInterfaceDeclaration.class))

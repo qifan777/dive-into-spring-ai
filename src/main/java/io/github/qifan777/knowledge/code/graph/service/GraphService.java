@@ -1,10 +1,10 @@
 package io.github.qifan777.knowledge.code.graph.service;
 
-import com.github.javaparser.JavaParser;
 import io.github.qifan777.knowledge.code.graph.entity.MethodNode;
 import io.github.qifan777.knowledge.code.graph.repository.ClassNodeRepository;
 import io.github.qifan777.knowledge.code.graph.repository.MethodNodeRepository;
 import io.github.qifan777.knowledge.infrastructure.code.CodeAssistantProperties;
+import io.github.qifan777.knowledge.infrastructure.code.JavaParserUtils;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +21,13 @@ public class GraphService {
     private final ClassNodeRepository classNodeRepository;
     private final MethodNodeRepository methodNodeRepository;
     private final Neo4jClient neo4jClient;
-    private final JavaParser javaParser;
     private final CodeAssistantProperties properties;
 
     @SneakyThrows
     public void buildGraph() {
         methodNodeRepository.deleteAll();
         classNodeRepository.deleteAll();
-        CodeGraph.BuildContext buildContext = new CodeGraph(properties.getProject().getProjectPath(), javaParser).buildGraph();
+        CodeGraph.BuildContext buildContext = new CodeGraph(properties.getProject().getProjectPath(), JavaParserUtils.getJavaParser()).buildGraph();
         classNodeRepository.saveAll(buildContext.classNodes());
         log.info("类节点保存完毕: {}", classNodeRepository.count());
         methodNodeRepository.saveAll(buildContext.methodNodes());

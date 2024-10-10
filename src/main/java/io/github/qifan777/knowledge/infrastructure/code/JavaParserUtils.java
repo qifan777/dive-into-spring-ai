@@ -6,26 +6,27 @@ import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 
+@Component
 @Slf4j
-@Configuration
+public class JavaParserUtils implements ApplicationContextAware {
+    private static CodeAssistantProperties properties;
 
-public class JavaParserConfiguration {
-    @Bean
-    public CombinedTypeSolver combinedTypeSolver(CodeAssistantProperties properties) {
+    public static JavaParser getJavaParser() {
         CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
         combinedTypeSolver.add(new JavaParserTypeSolver(Path.of(properties.getProject().getProjectPath()).resolve(Path.of("src", "main", "java"))));
-        return combinedTypeSolver;
-    }
-
-    @Bean
-    public JavaParser javaParser(CombinedTypeSolver combinedTypeSolver) {
         ParserConfiguration parserConfiguration = new ParserConfiguration().setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
         return new JavaParser(parserConfiguration);
     }
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        properties = applicationContext.getBean(CodeAssistantProperties.class);
+    }
 }
