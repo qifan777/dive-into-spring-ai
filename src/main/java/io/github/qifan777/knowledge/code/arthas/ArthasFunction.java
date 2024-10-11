@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.qifan777.knowledge.code.graph.entity.MethodNode;
-import io.github.qifan777.knowledge.code.graph.service.GraphService;
+import io.github.qifan777.knowledge.code.graph.service.CodeGraphService;
 import io.github.qifan777.knowledge.infrastructure.code.CodeAssistantProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,9 +31,15 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Description("诊断方法出现异常的原因")
 public class ArthasFunction implements Function<ArthasFunction.Request, String> {
-    private final GraphService graphService;
+    private final CodeGraphService codeGraphService;
     private final CodeAssistantProperties properties;
     private final ChatModel chatModel;
+
+    public record Request(@JsonProperty(required = true)
+                          @JsonPropertyDescription("类名") String className,
+                          @JsonProperty(required = true)
+                          @JsonPropertyDescription("类名") String methodName) {
+    }
 
     @Override
     public String apply(Request request) {
@@ -43,14 +49,14 @@ public class ArthasFunction implements Function<ArthasFunction.Request, String> 
         if (jobResult == null) {
             return "无异常信息";
         }
-        log.info("arthas监听结果: {}", jobResult);
-        String analyzeResult = jobResult.getBody()
+        String analyzeResult = jobResult
+                .getBody()
                 .getResults()
                 .stream()
                 .filter(r -> r.getType().equals("tt"))
                 .findFirst()
                 .map(result -> {
-                    String methods = graphService.findChildMethods(methodId).stream().map(MethodNode::getContent)
+                    String methods = codeGraphService.findChildMethods(methodId).stream().map(MethodNode::getContent)
                             .distinct()
                             .collect(Collectors.joining("\n"));
                     TimeFragment timeFragment = result.getTimeFragmentList().get(0);
@@ -72,12 +78,6 @@ public class ArthasFunction implements Function<ArthasFunction.Request, String> 
                 .orElse("无异常信息");
         log.info("诊断结果: {}", analyzeResult);
         return analyzeResult;
-    }
-
-    public record Request(@JsonProperty(required = true)
-                          @JsonPropertyDescription("类名") String className,
-                          @JsonProperty(required = true)
-                          @JsonPropertyDescription("类名") String methodName) {
     }
 
 

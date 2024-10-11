@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class GraphService {
+public class CodeGraphService {
     private final ClassNodeRepository classNodeRepository;
     private final MethodNodeRepository methodNodeRepository;
     private final Neo4jClient neo4jClient;
@@ -27,7 +27,7 @@ public class GraphService {
     public void buildGraph() {
         methodNodeRepository.deleteAll();
         classNodeRepository.deleteAll();
-        CodeGraph.BuildContext buildContext = new CodeGraph(properties.getProject().getProjectPath(), JavaParserUtils.getJavaParser()).buildGraph();
+        CodeGraphBuilder.BuildContext buildContext = new CodeGraphBuilder(properties.getProject().getProjectPath(), JavaParserUtils.getJavaParser()).buildGraph();
         classNodeRepository.saveAll(buildContext.classNodes());
         log.info("类节点保存完毕: {}", classNodeRepository.count());
         methodNodeRepository.saveAll(buildContext.methodNodes());
