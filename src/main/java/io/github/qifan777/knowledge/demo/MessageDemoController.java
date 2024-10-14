@@ -1,6 +1,8 @@
 package io.github.qifan777.knowledge.demo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.qifan777.knowledge.ai.message.dto.AiMessageParams;
+import io.github.qifan777.knowledge.ai.message.dto.AiMessageWrapper;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.ai.chat.client.ChatClient;
@@ -16,10 +18,7 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @RequestMapping("demo/message")
@@ -152,6 +151,10 @@ public class MessageDemoController {
                 .map(chatResponse -> ServerSentEvent.builder(chatResponse)
                         .event("message")
                         .build());
+    }
+
+    @PostMapping("ignore")
+    public void ignore(@RequestParam AiMessageWrapper wrapper, @RequestParam AiMessageParams params) {
     }
 
 }
