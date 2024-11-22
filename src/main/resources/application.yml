@@ -52,6 +52,11 @@ spring:
     # kimi 同样
     moonshot:
       api-key: xxx
+    ollama:
+      # 填写模型所在的地址
+      base-url: http://localhost:11434
+      chat:
+        model: xxx
     vectorstore:
       redis:
         initialize-schema: true

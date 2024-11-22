@@ -79,7 +79,6 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
     type: 'USER'
   } satisfies AiMessage
 
-  // 新建一个ChatGPT回复对象，不能重复使用同一个对象。
   responseMessage.value = {
     id: new Date().getTime().toString(),
     medias: [],
