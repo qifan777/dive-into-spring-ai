@@ -98,6 +98,7 @@ public class ReActChatModel implements ChatModel {
     private Flux<ChatResponse> stream(String prompt, DashScopeChatOptions options) {
         AtomicReference<String> answer = new AtomicReference<>("");
         String stop = "Final Answer:";
+        log.info("提示词: {}", prompt);
         return chatModel.stream(new Prompt(new UserMessage(prompt), options))
                 .windowUntil(chatResponse -> {
                     answer.set(answer.get() + chatResponse.getResult().getOutput().getContent());
