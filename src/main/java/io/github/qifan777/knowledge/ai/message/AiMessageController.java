@@ -15,8 +15,6 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.image.ImageModel;
-import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.model.Media;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.vectorstore.SearchRequest;
@@ -39,7 +37,7 @@ import java.util.Map;
 public class AiMessageController {
     private final AiMessageChatMemory chatMemory;
     private final ChatModel chatModel;
-    private final ImageModel imageModel;
+    //    private final ImageModel imageModel;
     private final VectorStore vectorStore;
     private final ObjectMapper objectMapper;
     private final AiMessageRepository messageRepository;
@@ -60,10 +58,10 @@ public class AiMessageController {
         messageRepository.save(input.toEntity());
     }
 
-    @PostMapping("chat/image")
-    public String textToImageChat(@RequestBody AiMessageInput input) {
-        return imageModel.call(new ImagePrompt(input.getTextContent())).getResult().getOutput().getUrl();
-    }
+//    @PostMapping("chat/image")
+//    public String textToImageChat(@RequestBody AiMessageInput input) {
+//        return imageModel.call(new ImagePrompt(input.getTextContent())).getResult().getOutput().getUrl();
+//    }
 
     /**
      * 为了支持文件问答，需要同时接收json（AiMessageWrapper json体）和 MultipartFile（文件）
@@ -85,7 +83,7 @@ public class AiMessageController {
         if (aiMessageWrapper.getParams().getEnableAgent()) {
             // 获取带有Agent注解的bean
             Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(Agent.class);
-            functionBeanNames = new String[beansWithAnnotation.keySet().size()];
+            functionBeanNames = new String[beansWithAnnotation.size()];
             functionBeanNames = beansWithAnnotation.keySet().toArray(functionBeanNames);
         }
         return ChatClient.create(chatModel).prompt()
