@@ -114,7 +114,7 @@ public class ReActChatModel implements ChatModel {
                     String content = chatResponse.getResult().getOutput().getContent();
                     if (content.contains(stop)) {
                         String[] split = chatResponse.getResult().getOutput().getContent().split(stop);
-                        return Flux.just(copyResponse(split[1], chatResponse));
+                        return Flux.just(copyResponse(split.length > 1 ? split[1] : "", chatResponse));
                     }
                     ReActThinkResult reactThinkResult = parseReactThink(content);
                     if (StringUtils.hasText(reactThinkResult.getAction())) {
