@@ -57,8 +57,11 @@ public class ReActChatModel implements ChatModel {
                 String call = call(inputPrompt + output, fromOptions);
                 ReActThinkResult reactThinkResult = parseReactThink(call);
                 if (StringUtils.hasText(reactThinkResult.getAction())) {
-                    String response = FunctionCallUtils.getFunctionCallback(reactThinkResult.getAction())
-                            .call(reactThinkResult.getActionInput(), new ToolContext(options.getToolContext() == null ? new HashMap<>() : options.getToolContext()));
+                    FunctionCallback functionCallback = FunctionCallUtils.getFunctionCallback(reactThinkResult.getAction());
+                    String response = "";
+                    if (functionCallback != null) {
+                        response = functionCallback.call(reactThinkResult.getActionInput(), new ToolContext(options.getToolContext() == null ? new HashMap<>() : options.getToolContext()));
+                    }
                     reactThinkResult.setActionOutput(response);
                     reActThinkResults.add(reactThinkResult);
                     output = reactThinkResult.getOriginText() + "\nObservation: " + reactThinkResult.getActionOutput();
@@ -118,10 +121,13 @@ public class ReActChatModel implements ChatModel {
                     }
                     ReActThinkResult reactThinkResult = parseReactThink(content);
                     if (StringUtils.hasText(reactThinkResult.getAction())) {
-                        String response = FunctionCallUtils.getFunctionCallback(reactThinkResult.getAction())
-                                .call(reactThinkResult.getActionInput(), new ToolContext(options.getToolContext() == null ? new HashMap<>() : options.getToolContext()));
+                        FunctionCallback functionCallback = FunctionCallUtils.getFunctionCallback(reactThinkResult.getAction());
+                        String response = "";
+                        if (functionCallback != null) {
+                            response = functionCallback.call(reactThinkResult.getActionInput(), new ToolContext(options.getToolContext() == null ? new HashMap<>() : options.getToolContext()));
+                        }
                         reactThinkResult.setActionOutput(response);
-                        return stream(prompt + content + "\nObservation: " + reactThinkResult.getActionOutput(), options);
+                        return stream(prompt + content + "\nObservation: " + response, options);
                     }
                     return Flux.just(chatResponse);
                 });
