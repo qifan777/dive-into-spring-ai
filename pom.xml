@@ -30,6 +30,10 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>io.github.qifan777</groupId>
+            <artifactId>generator-processor</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.javaparser</groupId>
             <artifactId>javaparser-symbol-solver-core</artifactId>
             <version>3.26.2</version>
@@ -38,10 +42,6 @@
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
             <version>3.3.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-neo4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.ai</groupId>

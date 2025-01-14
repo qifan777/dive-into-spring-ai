@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
-    "axios": "^1.6.4",
+    "axios": "1.7.4",
     "dayjs": "^1.11.10",
-    "element-plus": "^2.4.2",
+    "element-plus": "^2.9.1",
     "lodash": "^4.17.21",
     "md-editor-v3": "^4.13.2",
     "pinia": "^2.1.7",

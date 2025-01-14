@@ -8,3 +8,9 @@ input UserRegisterInput{
     phone
     password
 }
+input UserUpdateInput{
+    id
+    nickname
+    avatar
+    gender
+}

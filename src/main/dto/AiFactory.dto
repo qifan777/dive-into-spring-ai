@@ -1,0 +1,11 @@
+export io.github.qifan777.knowledge.ai.factory.entity.AiFactory
+
+input AiFactoryInput{
+    id
+    name
+    value
+}
+specification AiFactorySpec{
+    name
+    value
+}

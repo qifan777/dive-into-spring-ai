@@ -16,6 +16,7 @@ public class AiSessionController {
 
     /**
      * 根据id查询会话
+     *
      * @param id 会话id
      * @return 会话信息
      */
@@ -26,6 +27,7 @@ public class AiSessionController {
 
     /**
      * 保存会话
+     *
      * @param input 会话dto参考src/main/dto/AiSession.dto
      * @return 创建后的id
      */
@@ -46,6 +48,7 @@ public class AiSessionController {
 
     /**
      * 批量删除会话
+     *
      * @param ids 会话id列表
      */
     @DeleteMapping
