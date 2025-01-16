@@ -33,6 +33,8 @@ spring:
       chat:
         options:
           model: qwen-max
+          # 多模态图片理解需要开启
+#          multi-model: true
       embedding:
         options:
           model: text-embedding-v2
