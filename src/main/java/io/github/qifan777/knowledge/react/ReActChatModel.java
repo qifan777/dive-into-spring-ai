@@ -30,7 +30,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 @Slf4j
 @Primary
 @RequiredArgsConstructor
