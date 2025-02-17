@@ -3,6 +3,8 @@ package io.github.qifan777.knowledge.demo;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -19,6 +21,7 @@ import java.util.List;
 @Slf4j
 public class DocumentDemoController {
     private final VectorStore vectorStore;
+    private final ChatModel chatModel;
 
     /**
      * 嵌入文件
@@ -49,5 +52,14 @@ public class DocumentDemoController {
     @GetMapping("query")
     public List<Document> query(@RequestParam String query) {
         return vectorStore.similaritySearch(query);
+    }
+
+    @GetMapping("chat")
+    public String chat(@RequestParam String query) {
+        return ChatClient.create(chatModel)
+                .prompt(query)
+                .functions("documentAnalyzerFunction")
+                .call()
+                .content();
     }
 }
