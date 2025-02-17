@@ -19,8 +19,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-ai.version>1.0.0-M3</spring-ai.version>
-        <spring-ai-alibaba.version>1.0.0-M3.3</spring-ai-alibaba.version>
+        <spring-ai.version>1.0.0-M5</spring-ai.version>
+        <spring-ai-alibaba.version>1.0.0-M5.1</spring-ai-alibaba.version>
         <uni-ai.version>0.1.9</uni-ai.version>
         <jimmer.version>0.8.134</jimmer.version>
         <hutool.version>5.8.25</hutool.version>

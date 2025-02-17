@@ -38,7 +38,7 @@ public class DocumentAnalyzerFunction implements Function<DocumentAnalyzerFuncti
     public Response apply(Request request) {
         // ai解析用户的提问得到path参数，使用tika读取本地文件获取内容。把读取到的内容再返回给ai作为上下文去回答用户的问题。
         TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(new FileSystemResource(request.path));
-        return new Response(tikaDocumentReader.read().get(0).getContent());
+        return new Response(tikaDocumentReader.read().get(0).getText());
     }
 
 

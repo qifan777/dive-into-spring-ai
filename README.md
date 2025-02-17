@@ -22,14 +22,13 @@
   redis基础上拓展向量查询功能
 
     ```shell
-    docker run -d 
+    docker run -d \
     --name redis-stack \
     --restart=always \
     -v redis-data:/data \
     -p 6379:6379 \
     -p 8001:8001 \
-    -e REDIS_ARGS="--requirepass 123456" \ 
-    redis/redis-stack:latest
+    -e REDIS_ARGS="--requirepass 123456" redis/redis-stack:latest
     ```
 
 - neo4j 5+

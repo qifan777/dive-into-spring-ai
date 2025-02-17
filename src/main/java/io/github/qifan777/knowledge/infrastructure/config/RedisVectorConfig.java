@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.ai.autoconfigure.vectorstore.redis.RedisVectorStoreAutoConfiguration;
 import org.springframework.ai.autoconfigure.vectorstore.redis.RedisVectorStoreProperties;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.vectorstore.RedisVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.redis.RedisVectorStore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -32,12 +32,14 @@ public class RedisVectorConfig {
     public VectorStore vectorStore(EmbeddingModel embeddingModel,
                                    RedisVectorStoreProperties properties,
                                    RedisConnectionDetails redisConnectionDetails) {
-        RedisVectorStore.RedisVectorStoreConfig config = RedisVectorStore.RedisVectorStoreConfig.builder().withIndexName(properties.getIndex()).withPrefix(properties.getPrefix()).build();
-        return new RedisVectorStore(config, embeddingModel,
-                new JedisPooled(redisConnectionDetails.getStandalone().getHost(),
-                        redisConnectionDetails.getStandalone().getPort()
-                        , redisConnectionDetails.getUsername(),
-                        redisConnectionDetails.getPassword()),
-                properties.isInitializeSchema());
+        JedisPooled jedisPooled = new JedisPooled(redisConnectionDetails.getStandalone().getHost(),
+                redisConnectionDetails.getStandalone().getPort()
+                , redisConnectionDetails.getUsername(),
+                redisConnectionDetails.getPassword());
+        return RedisVectorStore.builder(jedisPooled, embeddingModel)
+                .indexName(properties.getIndex())
+                .prefix(properties.getPrefix())
+                .initializeSchema(properties.isInitializeSchema())
+                .build();
     }
 }

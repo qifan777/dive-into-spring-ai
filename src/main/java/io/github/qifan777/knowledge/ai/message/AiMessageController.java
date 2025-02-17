@@ -121,7 +121,7 @@ public class AiMessageController {
             promptUserSpec.media(userMessage.getMedia().toArray(medias));
         }
         // 用户发送的文本
-        promptUserSpec.text(message.getContent());
+        promptUserSpec.text(message.getText());
     }
 
     public void useChatHistory(ChatClient.AdvisorSpec advisorSpec, String sessionId) {
@@ -142,13 +142,13 @@ public class AiMessageController {
                 ---------------------
                 给定的上下文和提供的历史信息，而不是事先的知识，回复用户的意见。如果答案不在上下文中，告诉用户你不能回答这个问题。
                 """;
-        advisorSpec.advisors(new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults(), promptWithContext));
+        advisorSpec.advisors(new QuestionAnswerAdvisor(vectorStore, SearchRequest.builder().build(), promptWithContext));
     }
 
     @SneakyThrows
     public void useFile(ChatClient.PromptSystemSpec spec, MultipartFile file) {
         if (file == null) return;
-        String content = new TikaDocumentReader(new InputStreamResource(file.getInputStream())).get().get(0).getContent();
+        String content = new TikaDocumentReader(new InputStreamResource(file.getInputStream())).get().get(0).getText();
         Message message = new PromptTemplate("""
                 已下内容是额外的知识，在你回答问题时可以参考下面的内容
                 ---------------------
@@ -156,7 +156,7 @@ public class AiMessageController {
                 ---------------------
                 """)
                 .createMessage(Map.of("context", content));
-        spec.text(message.getContent());
+        spec.text(message.getText());
     }
 
 }

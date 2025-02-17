@@ -120,7 +120,7 @@ public class MessageDemoController {
                 """;
         return ChatClient.create(chatModel).prompt()
                 .user(prompt)
-                .advisors(new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults(), promptWithContext))
+                .advisors(new QuestionAnswerAdvisor(vectorStore, SearchRequest.builder().build(), promptWithContext))
                 .stream()
                 .content()
                 .map(chatResponse -> ServerSentEvent.builder(chatResponse)
