@@ -3,12 +3,9 @@ package io.github.qifan777.knowledge.user;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import io.github.qifan777.knowledge.user.dto.UserLoginInput;
-import io.github.qifan777.knowledge.user.dto.UserRegisterInput;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.qifan.infrastructure.common.exception.BusinessException;
 import lombok.AllArgsConstructor;
-import org.babyfish.jimmer.client.FetchBy;
-import org.babyfish.jimmer.sql.EnableDtoGeneration;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -18,36 +15,36 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 public class UserController {
-    private final UserRepository userRepository;
+
+    private final UserMapper userMapper;
 
     @GetMapping
-    public @FetchBy(value = "FETCHER", ownerType = UserRepository.class) User userInfo() {
-        return userRepository.findById(StpUtil.getLoginIdAsString(), UserRepository.FETCHER)
-            .orElseThrow(() -> new BusinessException("用户信息不存在"));
+    public User userInfo() {
+        return userMapper.selectById(StpUtil.getLoginIdAsString());
     }
 
     @PostMapping("login")
-    public SaTokenInfo login(@RequestBody UserLoginInput input) {
-        User databaseUser = userRepository.findByPhone(input.getPhone())
-            .orElseThrow(() -> new BusinessException("用户名/密码错误"));
-        if (!BCrypt.checkpw(input.getPassword(), databaseUser.password())) {
+    public SaTokenInfo login(@RequestBody User input) {
+        User databaseUser = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getPhone, input.getPhone()));
+        if (databaseUser == null) {
             throw new BusinessException("用户名/密码错误");
         }
-        StpUtil.login(databaseUser.id());
+        if (!BCrypt.checkpw(input.getPassword(), databaseUser.getPassword())) {
+            throw new BusinessException("用户名/密码错误");
+        }
+        StpUtil.login(databaseUser.getId());
         return StpUtil.getTokenInfo();
     }
 
     @PostMapping("register")
-    public SaTokenInfo register(@RequestBody UserRegisterInput input) {
-        Optional<User> byPhone = userRepository.findByPhone(input.getPhone());
+    public SaTokenInfo register(@RequestBody User input) {
+        Optional<User> byPhone = Optional.ofNullable(userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getPhone, input.getPhone())));
         if (byPhone.isPresent()) {
             throw new BusinessException("手机号已存在, 请登录");
         }
-        User save = userRepository.save(UserDraft.$.produce(draft -> {
-            draft.setPhone(input.getPhone())
-                .setPassword(BCrypt.hashpw(input.getPassword()));
-        }));
-        StpUtil.login(save.id());
+        input.setPassword(BCrypt.hashpw(input.getPassword()));
+        userMapper.insertOrUpdate(input);
+        StpUtil.login(input.getId());
         return StpUtil.getTokenInfo();
     }
 }

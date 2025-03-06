@@ -16,9 +16,9 @@ import logo from '@/assets/logo.jpg'
 import router from '@/router'
 import background from '@/assets/background.jpg'
 import { api } from '@/utils/api-instance'
-import type { UserLoginInput } from '@/apis/__generated/model/static'
+import type { User } from '@/apis/__generated/model/static'
 
-const loginForm = reactive<UserLoginInput>({ phone: '', password: '' })
+const loginForm = reactive<Pick<User, 'phone' | 'password'>>({ phone: '', password: '' })
 const ruleFormRef = ref<FormInstance>()
 const rules = reactive<FormRules<typeof loginForm>>({
   phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],

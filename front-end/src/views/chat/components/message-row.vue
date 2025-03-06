@@ -2,17 +2,17 @@
 import TextLoading from './text-loading.vue'
 import logo from '@/assets/logo.jpg'
 import MarkdownMessage from './markdown-message.vue'
-import type { AiMessage } from '../store/chat-store'
+import type { AiMessage2 } from '../store/chat-store'
 import { computed } from 'vue'
 // message：接受消息对象，展示消息内容和头像，并且根据角色调整消息位置。
 // avatar：用户头像，如果角色是 Assistant则使用 logo。
 const props = defineProps<{
-  message: AiMessage
+  message: AiMessage2
   avatar?: string
 }>()
 
 const images = computed(() => {
-  const medias = props.message.medias || []
+  const medias = JSON.parse(props.message.medias || '[]') as { type: string; data: string }[]
   return medias.filter((media) => media.type === 'image').map((media) => media.data)
 })
 </script>

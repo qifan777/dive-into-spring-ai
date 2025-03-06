@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { UserDto } from '@/apis/__generated/model/dto'
 import { api } from '@/utils/api-instance'
+import type {User} from "@/apis/__generated/model/static";
 
 export const useHomeStore = defineStore('home', () => {
-  const userInfo = ref<UserDto['UserRepository/FETCHER']>()
+  const userInfo = ref<User>()
   const getUserInfo = async () => {
     userInfo.value = await api.userController.userInfo()
     return userInfo.value

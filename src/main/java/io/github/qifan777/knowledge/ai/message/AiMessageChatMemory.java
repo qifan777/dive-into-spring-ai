@@ -1,6 +1,10 @@
 package io.github.qifan777.knowledge.ai.message;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qifan.infrastructure.common.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -17,41 +21,49 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class AiMessageChatMemory implements ChatMemory {
-    private final AiMessageRepository messageRepository;
+    private final AiMessageMapper messageMapper;
+    private final ObjectMapper objectMapper;
 
-    public static AiMessage toAiMessage(Message message, String sessionId) {
-        return AiMessageDraft.$.produce(draft -> {
-            draft.setSessionId(sessionId)
-                    .setTextContent(message.getText())
-                    .setType(message.getMessageType())
-                    .setMedias(new ArrayList<>());
-            if (message instanceof UserMessage userMessage &&
+    @SneakyThrows
+    public static AiMessage toAiMessage(Message message, String sessionId, ObjectMapper mapper) {
+        AiMessage aiMessage = new AiMessage();
+        aiMessage.setAiSessionId(sessionId);
+        aiMessage.setTextContent(message.getText());
+        aiMessage.setType(message.getMessageType());
+        aiMessage.setMedias(mapper.writeValueAsString(new ArrayList<>()));
+        if (message instanceof UserMessage userMessage &&
                 !CollectionUtil.isEmpty(userMessage.getMedia())) {
-                List<AiMessage.Media> mediaList = userMessage
-                        .getMedia()
-                        .stream()
-                        .map(media -> new AiMessage.Media()
-                                .setType(media.getMimeType().getType())
-                                .setData(media.getData().toString()))
-                        .toList();
-                draft.setMedias(mediaList);
-            }
-        });
+            List<AiMessage.Media> mediaList = userMessage
+                    .getMedia()
+                    .stream()
+                    .map(media -> {
+                        AiMessage.Media media1 = new AiMessage.Media();
+                        media1.setType(media.getMimeType().getType());
+                        media1.setData(media.getData().toString());
+                        return media1;
+                    })
+                    .toList();
+            aiMessage.setMedias(mapper.writeValueAsString(mediaList));
+        }
+        return aiMessage;
     }
 
-    public static Message toSpringAiMessage(AiMessage aiMessage) {
+    @SneakyThrows
+    public static Message toSpringAiMessage(AiMessage aiMessage, ObjectMapper objectMapper) {
         List<Media> mediaList = new ArrayList<>();
-        if (!CollectionUtil.isEmpty(aiMessage.medias())) {
-            mediaList = aiMessage.medias().stream().map(AiMessageChatMemory::toSpringAiMedia).toList();
+        List<AiMessage.Media> medias = objectMapper.readValue(aiMessage.getMedias(), new TypeReference<List<AiMessage.Media>>() {
+        });
+        if (!CollectionUtil.isEmpty(medias)) {
+            mediaList = medias.stream().map(AiMessageChatMemory::toSpringAiMedia).toList();
         }
-        if (aiMessage.type().equals(MessageType.ASSISTANT)) {
-            return new AssistantMessage(aiMessage.textContent());
+        if (aiMessage.getType().equals(MessageType.ASSISTANT)) {
+            return new AssistantMessage(aiMessage.getTextContent());
         }
-        if (aiMessage.type().equals(MessageType.USER)) {
-            return new UserMessage(aiMessage.textContent(), mediaList);
+        if (aiMessage.getType().equals(MessageType.USER)) {
+            return new UserMessage(aiMessage.getTextContent(), mediaList);
         }
-        if (aiMessage.type().equals(MessageType.SYSTEM)) {
-            return new SystemMessage(aiMessage.textContent());
+        if (aiMessage.getType().equals(MessageType.SYSTEM)) {
+            return new SystemMessage(aiMessage.getTextContent());
         }
         throw new BusinessException("不支持的消息类型");
     }
@@ -77,12 +89,10 @@ public class AiMessageChatMemory implements ChatMemory {
      */
     @Override
     public List<Message> get(String conversationId, int lastN) {
-        return messageRepository
-                // 查询会话内的最新n条消息
-                .findBySessionId(conversationId, lastN)
-                .stream()
-                // 转成Message对象
-                .map(AiMessageChatMemory::toSpringAiMessage)
+        return messageMapper
+                .selectPage(new Page<>(1, lastN), Wrappers.lambdaQuery(AiMessage.class).eq(AiMessage::getAiSessionId, conversationId)
+                        .orderByAsc(AiMessage::getCreatedTime)).getRecords()
+                .stream().map(row -> toSpringAiMessage(row, objectMapper))
                 .toList();
     }
 
@@ -93,6 +103,6 @@ public class AiMessageChatMemory implements ChatMemory {
      */
     @Override
     public void clear(String conversationId) {
-        messageRepository.deleteBySessionId(conversationId);
+        messageMapper.delete(Wrappers.lambdaQuery(AiMessage.class).eq(AiMessage::getAiSessionId, conversationId));
     }
 }

@@ -16,10 +16,9 @@ import logo from '@/assets/logo.jpg'
 import router from '@/router'
 import background from '@/assets/background.jpg'
 import { api } from '@/utils/api-instance'
-import type { UserRegisterInput } from '@/apis/__generated/model/static'
 import { assertFormValidate } from '@/utils/common'
-
-const registerForm = reactive<UserRegisterInput>({ phone: '', password: '' })
+import type { User } from '@/apis/__generated/model/static'
+const registerForm = reactive<Pick<User, 'phone' | 'password'>>({ phone: '', password: '' })
 const ruleFormRef = ref<FormInstance>()
 
 const rules = reactive<FormRules<typeof registerForm>>({

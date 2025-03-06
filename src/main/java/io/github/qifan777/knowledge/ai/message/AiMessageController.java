@@ -1,8 +1,8 @@
 package io.github.qifan777.knowledge.ai.message;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.qifan777.knowledge.ai.agent.Agent;
-import io.github.qifan777.knowledge.ai.message.dto.AiMessageInput;
 import io.github.qifan777.knowledge.ai.message.dto.AiMessageWrapper;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
 import java.util.Map;
 
 @RequestMapping("message")
@@ -40,8 +41,8 @@ public class AiMessageController {
     //    private final ImageModel imageModel;
     private final VectorStore vectorStore;
     private final ObjectMapper objectMapper;
-    private final AiMessageRepository messageRepository;
     private final ApplicationContext applicationContext;
+    private final AiMessageMapper aiMessageMapper;
 
     @DeleteMapping("history/{sessionId}")
     public void deleteHistory(@PathVariable String sessionId) {
@@ -54,8 +55,15 @@ public class AiMessageController {
      * @param input 用户发送的消息/AI回复的消息
      */
     @PostMapping
-    public void save(@RequestBody AiMessageInput input) {
-        messageRepository.save(input.toEntity());
+    public void save(@RequestBody AiMessage input) {
+        input.setId(null);
+        aiMessageMapper.insertOrUpdate(input);
+    }
+
+    @GetMapping("list/{sessionId}")
+    public List<AiMessage> getSessionMessages(@PathVariable String sessionId) {
+        return aiMessageMapper.selectList(Wrappers.lambdaQuery(AiMessage.class)
+                .eq(AiMessage::getAiSessionId, sessionId).orderByAsc(AiMessage::getCreatedTime));
     }
 
 //    @PostMapping("chat/image")
@@ -94,7 +102,7 @@ public class AiMessageController {
                 .functions(functionBeanNames)
                 .advisors(advisorSpec -> {
                     // 使用历史消息
-                    useChatHistory(advisorSpec, aiMessageWrapper.getMessage().getSessionId());
+                    useChatHistory(advisorSpec, aiMessageWrapper.getMessage().getAiSessionId());
                     // 使用向量数据库
                     useVectorStore(advisorSpec, aiMessageWrapper.getParams().getEnableVectorStore());
                 })
@@ -111,11 +119,11 @@ public class AiMessageController {
         return objectMapper.writeValueAsString(response);
     }
 
-    public void toPrompt(ChatClient.PromptUserSpec promptUserSpec, AiMessageInput input) {
+    public void toPrompt(ChatClient.PromptUserSpec promptUserSpec, AiMessage input) {
         // AiMessageInput转成Message
-        Message message = AiMessageChatMemory.toSpringAiMessage(input.toEntity());
+        Message message = AiMessageChatMemory.toSpringAiMessage(input, objectMapper);
         if (message instanceof UserMessage userMessage &&
-            !CollectionUtils.isEmpty(userMessage.getMedia())) {
+                !CollectionUtils.isEmpty(userMessage.getMedia())) {
             // 用户发送的图片/语言
             Media[] medias = new Media[userMessage.getMedia().size()];
             promptUserSpec.media(userMessage.getMedia().toArray(medias));

@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { CircleClose } from '@element-plus/icons-vue'
-import type { AiSession } from '@/views/chat/store/chat-store'
+import type { AiSession2 } from '@/views/chat/store/chat-store'
 
 // entity：用于展示的会话信息
-const prop = defineProps<{ active: boolean; session: AiSession }>()
+const prop = defineProps<{ active: boolean; session: AiSession2 }>()
 // 定义删除事件，当触发删除事件时会向外部发送被删除的会话。
 const emit = defineEmits<{
-  delete: [session: AiSession]
+  delete: [session: AiSession2]
 }>()
 // 当鼠标放到会话上时，会弹出删除图标，点击删除图标发送删除事件。
 const handleDeleteSession = () => {

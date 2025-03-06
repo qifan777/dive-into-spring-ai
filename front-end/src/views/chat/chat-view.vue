@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage, type UploadProps, type UploadUserFile } from 'element-plus'
 import { api } from '@/utils/api-instance'
 import { SSE } from 'sse.js'
-import { type AiMessage, useChatStore } from './store/chat-store'
+import { type AiMessage2, useChatStore } from './store/chat-store'
 import type { AiMessageParams, AiMessageWrapper } from '@/apis/__generated/model/static'
 
 type ChatResponse = {
@@ -36,12 +36,17 @@ const loading = ref(true)
 
 onMounted(async () => {
   // 查询自己的聊天会话
-  api.aiSessionController.findByUser().then((res) => {
+  api.aiSessionController.findByUser().then(async (res) => {
     // 讲会话添加到列表中
-    sessionList.value = res.map((row) => {
-      return { ...row, checked: false }
-    })
-    // 默认选中的聊天会话是第一个
+    sessionList.value = await Promise.all(
+      res.map(async (row) => {
+        return {
+          ...row,
+          checked: false,
+          messages: await api.aiMessageController.getSessionMessages({ sessionId: row.id })
+        }
+      })
+    ) // 默认选中的聊天会话是第一个
     if (sessionList.value.length > 0) {
       activeSession.value = sessionList.value[0]
     } else {
@@ -52,12 +57,12 @@ onMounted(async () => {
 })
 
 // ChatGPT的回复
-const responseMessage = ref<AiMessage>({
+const responseMessage = ref<AiMessage2>({
   id: new Date().getTime().toString(),
   type: 'ASSISTANT',
-  medias: [],
+  medias: '[]',
   textContent: '',
-  sessionId: ''
+  aiSessionId: ''
 })
 
 const handleSendMessage = async (message: { text: string; image: string }) => {
@@ -66,25 +71,25 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
     return
   }
   // 图片/语音
-  const medias: AiMessage['medias'] = []
+  const medias: { type: string; data: string }[] = []
   if (message.image) {
     medias.push({ type: 'image', data: message.image })
   }
   // 用户的提问
   const chatMessage = {
     id: new Date().getTime().toString(),
-    sessionId: activeSession.value.id,
-    medias,
+    aiSessionId: activeSession.value.id,
+    medias: JSON.stringify(medias),
     textContent: message.text,
     type: 'USER'
-  } satisfies AiMessage
+  } satisfies AiMessage2
 
   responseMessage.value = {
     id: new Date().getTime().toString(),
-    medias: [],
+    medias: '[]',
     type: 'ASSISTANT',
     textContent: '',
-    sessionId: activeSession.value.id
+    aiSessionId: activeSession.value.id
   }
   const body: AiMessageWrapper = { message: chatMessage, params: options.value }
   const form = new FormData()
