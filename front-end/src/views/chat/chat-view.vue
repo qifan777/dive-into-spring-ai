@@ -145,6 +145,44 @@ const beforeUpload: UploadProps['beforeUpload'] = () => {
   return true
 }
 const fileList = ref<UploadUserFile[]>([])
+const handleSummary = async () => {
+  if (!activeSession.value) return
+  const form = new FormData()
+  if (fileList.value.length && fileList.value[0].raw) {
+    form.append('file', fileList.value[0].raw)
+  }
+  const evtSource = new SSE(API_PREFIX + '/message/summary?sessionId=' + activeSession.value.id, {
+    withCredentials: true,
+    // 禁用自动启动，需要调用stream()方法才能发起请求
+    start: false,
+    payload: form as any,
+    method: 'POST'
+  })
+  evtSource.addEventListener('message', async (event: any) => {
+    const response = JSON.parse(event.data) as ChatResponse
+    const finishReason = response.result.metadata.finishReason
+    if (response.result.output.content) {
+      responseMessage.value.textContent += response.result.output.content
+      // 滚动到底部
+      await nextTick(() => {
+        messageListRef.value?.scrollTo(0, messageListRef.value.scrollHeight)
+      })
+    }
+    if (finishReason && finishReason.toLowerCase() == 'stop') {
+      evtSource.close()
+      // 保存大模型的回复
+      await api.aiMessageController.save({ body: responseMessage.value })
+    }
+  })
+
+  // 调用stream，发起请求。
+  evtSource.stream()
+  // 将两条消息显示在页面中
+  activeSession.value.messages.push(...[responseMessage.value])
+  await nextTick(() => {
+    messageListRef.value?.scrollTo(0, messageListRef.value.scrollHeight)
+  })
+}
 </script>
 <template>
   <!-- 最外层页面于窗口同宽，使聊天面板居中 -->
@@ -221,7 +259,7 @@ const fileList = ref<UploadUserFile[]>([])
         <message-input @send="handleSendMessage" v-if="activeSession"></message-input>
       </div>
       <div class="option-panel">
-        <el-form size="small">
+        <el-form size="small" label-width="50">
           <el-form-item label="文件">
             <div class="upload">
               <el-upload v-model:file-list="fileList" :auto-upload="false" :limit="1">
@@ -229,8 +267,8 @@ const fileList = ref<UploadUserFile[]>([])
               </el-upload>
             </div>
           </el-form-item>
-          <el-form-item label="简历打方">
-            <el-button type="primary">总结打分</el-button>
+          <el-form-item label="">
+            <el-button type="primary" @click="handleSummary">总结打分</el-button>
           </el-form-item>
         </el-form>
       </div>

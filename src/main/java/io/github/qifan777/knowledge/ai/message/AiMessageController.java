@@ -58,8 +58,8 @@ public class AiMessageController {
         messageRepository.save(input.toEntity());
     }
 
-    @PostMapping("summary")
-    public String summary(@RequestParam String sessionId, @RequestPart(required = false) MultipartFile file) {
+    @PostMapping(value = "summary", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<String>> summary(@RequestParam String sessionId, @RequestPart(required = false) MultipartFile file) {
         return ChatClient.create(chatModel).prompt()
                 // 启用文件问答
                 .system(promptSystemSpec -> useFile(promptSystemSpec, file))
@@ -69,8 +69,12 @@ public class AiMessageController {
                     // 使用历史消息
                     useChatHistory(advisorSpec, sessionId);
                 })
-                .call()
-                .content();
+                .stream()
+                .chatResponse()
+                .map(chatResponse -> ServerSentEvent.builder(toJson(chatResponse))
+                        // 和前端监听的事件相对应
+                        .event("message")
+                        .build());
     }
 
     /**
@@ -125,7 +129,7 @@ public class AiMessageController {
         // AiMessageInput转成Message
         Message message = AiMessageChatMemory.toSpringAiMessage(input.toEntity());
         if (message instanceof UserMessage userMessage &&
-            !CollectionUtils.isEmpty(userMessage.getMedia())) {
+                !CollectionUtils.isEmpty(userMessage.getMedia())) {
             // 用户发送的图片/语言
             Media[] medias = new Media[userMessage.getMedia().size()];
             promptUserSpec.media(userMessage.getMedia().toArray(medias));
