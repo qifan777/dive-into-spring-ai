@@ -222,29 +222,15 @@ const fileList = ref<UploadUserFile[]>([])
       </div>
       <div class="option-panel">
         <el-form size="small">
-          <el-form-item>
-            <el-upload
-              v-loading="embeddingLoading"
-              :action="`${API_PREFIX}/document/embedding`"
-              :show-file-list="false"
-              :on-success="onUploadSuccess"
-              :before-upload="beforeUpload"
-            >
-              <el-button type="primary">上传文档</el-button>
-            </el-upload>
-          </el-form-item>
-          <el-form-item label="知识库">
-            <el-switch v-model="options.enableVectorStore"></el-switch>
-          </el-form-item>
-          <el-form-item label="agent（智能体）">
-            <el-switch v-model="options.enableAgent"></el-switch>
-          </el-form-item>
           <el-form-item label="文件">
             <div class="upload">
               <el-upload v-model:file-list="fileList" :auto-upload="false" :limit="1">
-                <el-button type="primary">上传文本文件</el-button>
+                <el-button type="primary">上传简历</el-button>
               </el-upload>
             </div>
+          </el-form-item>
+          <el-form-item label="简历打方">
+            <el-button type="primary">总结打分</el-button>
           </el-form-item>
         </el-form>
       </div>

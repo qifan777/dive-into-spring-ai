@@ -58,10 +58,20 @@ public class AiMessageController {
         messageRepository.save(input.toEntity());
     }
 
-//    @PostMapping("chat/image")
-//    public String textToImageChat(@RequestBody AiMessageInput input) {
-//        return imageModel.call(new ImagePrompt(input.getTextContent())).getResult().getOutput().getUrl();
-//    }
+    @PostMapping("summary")
+    public String summary(@RequestParam String sessionId, @RequestPart(required = false) MultipartFile file) {
+        return ChatClient.create(chatModel).prompt()
+                // 启用文件问答
+                .system(promptSystemSpec -> useFile(promptSystemSpec, file))
+                .user("请你跟你历史的对话信息对简历进行综合的打方")
+                // agent列表
+                .advisors(advisorSpec -> {
+                    // 使用历史消息
+                    useChatHistory(advisorSpec, sessionId);
+                })
+                .call()
+                .content();
+    }
 
     /**
      * 为了支持文件问答，需要同时接收json（AiMessageWrapper json体）和 MultipartFile（文件）
@@ -150,7 +160,7 @@ public class AiMessageController {
         if (file == null) return;
         String content = new TikaDocumentReader(new InputStreamResource(file.getInputStream())).get().get(0).getText();
         Message message = new PromptTemplate("""
-                已下内容是额外的知识，在你回答问题时可以参考下面的内容
+                你是一个专业的面试官，下面是我的简历。请你模拟面试官评估我的简历
                 ---------------------
                 {context}
                 ---------------------
