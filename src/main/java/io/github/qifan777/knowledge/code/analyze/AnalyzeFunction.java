@@ -112,7 +112,7 @@ public class AnalyzeFunction implements Function<AnalyzeFunction.Request, String
                                 .distinct()
                                 .collect(Collectors.joining("\n")),
                         "methodId", methodId))
-                .getContent();
+                .getText();
         log.info("评审方法: {}", prompt);
         String content = childMethods.stream().filter(m -> m.getId().equals(methodId)).findFirst().orElseThrow().getContent();
         return chatModel.stream(prompt).map(response -> new AnalyzeResult(methodId, response, methodId.split("#")[0], content));
@@ -124,7 +124,7 @@ public class AnalyzeFunction implements Function<AnalyzeFunction.Request, String
                 请你评审一下该提交文件是否有可以改进的地方，并且附带修改后的代码片段，没有请回答无，用中文回答。
                 {content}
                 """)
-                .createMessage(Map.of("content", fileContent)).getContent();
+                .createMessage(Map.of("content", fileContent)).getText();
         log.info("评审文件提示词: {}", prompt);
         String result = chatModel.call(prompt);
         log.info("文件分析结果: {}", result);

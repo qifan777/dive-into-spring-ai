@@ -23,7 +23,7 @@ type ChatResponse = {
     }
     output: {
       messageType: string
-      content: string
+      text: string
     }
   }
 }
@@ -103,8 +103,10 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
   evtSource.addEventListener('message', async (event: any) => {
     const response = JSON.parse(event.data) as ChatResponse
     const finishReason = response.result.metadata.finishReason
-    if (response.result.output.content) {
-      responseMessage.value.textContent += response.result.output.content
+    if (response.result.output.text) {
+      // 灵积不需要累加
+      responseMessage.value.textContent = response.result.output.text
+      // responseMessage.value.textContent += response.result.output.text
       // 滚动到底部
       await nextTick(() => {
         messageListRef.value?.scrollTo(0, messageListRef.value.scrollHeight)

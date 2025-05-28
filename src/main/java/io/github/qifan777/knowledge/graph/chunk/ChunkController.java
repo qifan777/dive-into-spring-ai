@@ -62,7 +62,7 @@ public class ChunkController {
                         .id("%s-%s-chunk%04d".formatted(formId, item, chunkSeqId))
                         .chunkSeqId(chunkSeqId)
                         .formId(formId)
-                        .text(documents.get(chunkSeqId).getContent())
+                        .text(documents.get(chunkSeqId).getText())
                         .item(item)
                         .build());
             }

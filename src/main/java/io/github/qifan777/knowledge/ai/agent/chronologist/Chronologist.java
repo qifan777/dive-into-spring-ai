@@ -32,7 +32,7 @@ public class Chronologist extends AbstractAgent implements Function<Chronologist
                 .prompt()
                 .system(SYSTEM)
                 .user(request.query)
-                .functions(getAgentFunctions(this.getClass()))
+                .toolNames(getAgentFunctions(this.getClass()))
                 .call()
                 .content();
     }

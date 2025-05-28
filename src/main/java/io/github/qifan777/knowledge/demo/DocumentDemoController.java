@@ -58,7 +58,7 @@ public class DocumentDemoController {
     public String chat(@RequestParam String query) {
         return ChatClient.create(chatModel)
                 .prompt(query)
-                .functions("documentAnalyzerFunction")
+                .toolNames("documentAnalyzerFunction")
                 .call()
                 .content();
     }

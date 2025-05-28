@@ -21,7 +21,7 @@ public class ComputerAssistant extends AbstractAgent implements Function<Compute
     public String apply(Request request) {
         return ChatClient.create(chatModel)
                 .prompt()
-                .functions(getFunctions(CpuAnalyzer.class, DirectoryReader.class))
+                .toolNames(getFunctions(CpuAnalyzer.class, DirectoryReader.class))
                 .user(request.query())
                 .call()
                 .content();

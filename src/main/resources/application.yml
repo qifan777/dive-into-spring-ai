@@ -10,12 +10,7 @@ spring:
       password: 123456
       repositories:
         enabled: false
-      lettuce:
-        pool:
-          max-active: 200
-          max-wait: -1ms
-          max-idle: 10
-          min-idle: 0
+      client-type: jedis
   datasource:
     url: jdbc:mysql://localhost:3306/knowledge_base
     username: root
@@ -32,9 +27,10 @@ spring:
       api-key: xxx
       chat:
         options:
+          incremental-output: false
           model: qwen-max
           # 多模态图片理解需要开启
-#          multi-model: true
+      #          multi-model: true
       embedding:
         options:
           model: text-embedding-v2
@@ -62,6 +58,8 @@ spring:
     vectorstore:
       redis:
         initialize-schema: true
+        index-name: custom-index
+        prefix: custom-prefix
 code-assistant:
   project:
     project-path: F:\workspace\code\opensource\dive-into-spring-ai

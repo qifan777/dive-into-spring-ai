@@ -71,7 +71,7 @@ public class ArthasFunction implements Function<ArthasFunction.Request, String> 
                                     "methods", methods,
                                     "params", timeFragment.getParams().stream().map(param -> param.getObject() == null ? "" : param.getObject().toString()).collect(Collectors.joining("\n")),
                                     "exp", timeFragment.getThrowExp()))
-                            .getContent();
+                            .getText();
                     log.info("代码诊断prompt: {}", content);
                     return chatModel.call(content);
                 })

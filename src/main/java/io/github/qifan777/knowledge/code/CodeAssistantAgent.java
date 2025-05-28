@@ -24,7 +24,7 @@ public class CodeAssistantAgent extends AbstractAgent implements Function<CodeAs
         return ChatClient.create(chatModel)
                 .prompt()
                 .user(request.query())
-                .functions(getFunctions(AnalyzeFunction.class, ArthasFunction.class))
+                .toolNames(getFunctions(AnalyzeFunction.class, ArthasFunction.class))
                 .call()
                 .content();
     }

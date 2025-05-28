@@ -7,14 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
-import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
@@ -32,7 +31,9 @@ public class MessageDemoController {
     private final ObjectMapper objectMapper;
     private final VectorStore vectorStore;
     // 模拟数据库存储会话和消息
-    private final ChatMemory chatMemory = new InMemoryChatMemory();
+    private final MessageWindowChatMemory chatMemory = MessageWindowChatMemory.builder()
+            .maxMessages(10)
+            .build();
 
     /**
      * 非流式问答
@@ -94,7 +95,7 @@ public class MessageDemoController {
         return ChatClient.create(chatModel).prompt()
                 .messages(new UserMessage(prompt))
                 // spring ai会从已注册为bean的function中查找函数，将它添加到请求中。如果成功触发就会调用函数
-                .functions(functionName)
+                .toolNames(functionName)
                 .stream()
                 .chatResponse()
                 .map(chatResponse -> ServerSentEvent.builder(toJson(chatResponse))
@@ -112,6 +113,7 @@ public class MessageDemoController {
     public Flux<ServerSentEvent<String>> chatStreamWithDatabase(@RequestParam String prompt) {
         // question_answer_context是一个占位符，会替换成向量数据库中查询到的文档。QuestionAnswerAdvisor会替换。
         String promptWithContext = """
+                {query}
                 下面是上下文信息
                 ---------------------
                 {question_answer_context}
@@ -120,7 +122,8 @@ public class MessageDemoController {
                 """;
         return ChatClient.create(chatModel).prompt()
                 .user(prompt)
-                .advisors(new QuestionAnswerAdvisor(vectorStore, SearchRequest.builder().build(), promptWithContext))
+                .advisors(QuestionAnswerAdvisor.builder(vectorStore)
+                        .promptTemplate(new PromptTemplate(promptWithContext)).build())
                 .stream()
                 .content()
                 .map(chatResponse -> ServerSentEvent.builder(chatResponse)
@@ -141,7 +144,10 @@ public class MessageDemoController {
         // 1. 如果需要存储会话和消息到数据库，自己可以实现ChatMemory接口，这里使用InMemoryChatMemory，内存存储。
         // 2. 传入会话id，MessageChatMemoryAdvisor会根据会话id去查找消息。
         // 3. 只需要携带最近10条消息
-        var messageChatMemoryAdvisor = new MessageChatMemoryAdvisor(chatMemory, sessionId, 10);
+        MessageChatMemoryAdvisor  messageChatMemoryAdvisor= MessageChatMemoryAdvisor
+                .builder(chatMemory)
+                .conversationId(sessionId)
+                .build();
         return ChatClient.create(chatModel).prompt()
                 .user(prompt)
                 // MessageChatMemoryAdvisor会在消息发送给大模型之前，从ChatMemory中获取会话的历史消息，然后一起发送给大模型。
