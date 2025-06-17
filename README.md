@@ -54,7 +54,7 @@
 ### 1.clone代码
 
 ```shell
-git clone https://github.com/qifan777/KnowledgeBaseChatSpringAI
+git clone https://github.com/qifan777/dive-into-spring-ai
 ```
 
 ### 2. idea打开项目
