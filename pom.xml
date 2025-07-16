@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
-            <version>3.3.4</version>
+            <version>4.0.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
@@ -72,7 +72,7 @@
         <dependency>
             <artifactId>jimmer-spring-boot-starter</artifactId>
             <groupId>org.babyfish.jimmer</groupId>
-            <version>${jimmer.version}</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.qifan777</groupId>
@@ -102,7 +102,7 @@
         <dependency>
             <groupId>com.alibaba.cloud.ai</groupId>
             <artifactId>spring-ai-alibaba-starter-dashscope</artifactId>
-            <version>${spring-ai-alibaba.version}</version>
+            <version>1.0.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -124,17 +124,17 @@
         <dependency>
             <artifactId>hutool-core</artifactId>
             <groupId>cn.hutool</groupId>
-            <version>${hutool.version}</version>
+            <version>6.1.2</version>
         </dependency>
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-redis-jackson</artifactId>
-            <version>${sa-token.version}</version>
+            <version>1.37.0</version>
         </dependency>
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot3-starter</artifactId>
-            <version>${sa-token.version}</version>
+            <version>1.37.0</version>
         </dependency>
     </dependencies>
     <dependencyManagement>
