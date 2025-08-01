@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx.cmd",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\a1507\\Downloads"
+      ]
+    },
+    "playwright": {
+      "command": "npx.cmd",
+      "args": ["-y", "@executeautomation/playwright-mcp-server"]
+    }
+  }
+}

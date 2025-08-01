@@ -60,6 +60,10 @@ spring:
         initialize-schema: true
         index-name: custom-index
         prefix: custom-prefix
+    mcp:
+      client:
+        stdio:
+          servers-configuration: classpath:mcp-servers.json
 code-assistant:
   project:
     project-path: F:\workspace\code\opensource\dive-into-spring-ai

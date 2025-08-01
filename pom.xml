@@ -20,7 +20,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-ai.version>1.0.0</spring-ai.version>
-        <spring-ai-alibaba.version>1.0.0.1</spring-ai-alibaba.version>
+        <spring-ai-alibaba.version>1.0.0.2</spring-ai-alibaba.version>
         <uni-ai.version>0.1.9</uni-ai.version>
         <jimmer.version>0.8.134</jimmer.version>
         <hutool.version>5.8.25</hutool.version>
@@ -29,6 +29,15 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.alibaba.cloud.ai</groupId>
+            <artifactId>spring-ai-alibaba-graph-core</artifactId>
+            <version>${spring-ai-alibaba.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>

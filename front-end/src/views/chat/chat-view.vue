@@ -88,8 +88,7 @@ const handleSendMessage = async (message: { text: string; image: string }) => {
   }
   const body: AiMessageWrapper = { message: chatMessage, params: options.value }
   const form = new FormData()
-  form.set('input', JSON.stringify(body))
-
+  form.append('input', new Blob([JSON.stringify(body)], { type: 'application/json' }))
   if (fileList.value.length && fileList.value[0].raw) {
     form.append('file', fileList.value[0].raw)
   }

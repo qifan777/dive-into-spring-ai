@@ -65,9 +65,8 @@ public class AiMessageController {
     /**
      * 为了支持文件问答，需要同时接收json（AiMessageWrapper json体）和 MultipartFile（文件）
      * Content-Type 从 application/json 修改为 multipart/form-data
-     * 之前接收请求参数是用@RequestBody, 现在使用@RequestPart 接收json字符串再手动转成AiMessageWrapper.
+     * 之前接收请求参数是用@RequestBody, 现在使用@RequestPart
      * SpringMVC的@RequestPart是支持自动将Json字符串转换为Java对象，也就是说可以等效`@RequestBody`，
-     * 但是由于前端FormData无法设置Part的Content-Type，所以只能手动转json字符串再转成Java对象。
      *
      * @param input 消息包含文本信息，会话id，多媒体信息（图片语言）。参考src/main/dto/AiMessage.dto
      * @param file  文件问答
@@ -75,11 +74,10 @@ public class AiMessageController {
      */
     @SneakyThrows
     @PostMapping(value = "chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<String>> chat(@RequestPart String input, @RequestPart(required = false) MultipartFile file) {
-        AiMessageWrapper aiMessageWrapper = objectMapper.readValue(input, AiMessageWrapper.class);
+    public Flux<ServerSentEvent<String>> chat(@RequestPart AiMessageWrapper input, @RequestPart(required = false) MultipartFile file) {
         String[] functionBeanNames = new String[0];
         // 如果启用Agent则获取Agent的bean
-        if (aiMessageWrapper.getParams().getEnableAgent()) {
+        if (input.getParams().getEnableAgent()) {
             // 获取带有Agent注解的bean
             Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(Agent.class);
             functionBeanNames = new String[beansWithAnnotation.size()];
@@ -88,14 +86,14 @@ public class AiMessageController {
         return ChatClient.create(chatModel).prompt()
                 // 启用文件问答
                 .system(promptSystemSpec -> useFile(promptSystemSpec, file))
-                .user(promptUserSpec -> toPrompt(promptUserSpec, aiMessageWrapper.getMessage()))
+                .user(promptUserSpec -> toPrompt(promptUserSpec, input.getMessage()))
                 // agent列表
                 .toolNames(functionBeanNames)
                 .advisors(advisorSpec -> {
                     // 使用历史消息
-                    useChatHistory(advisorSpec, aiMessageWrapper.getMessage().getSessionId());
+                    useChatHistory(advisorSpec, input.getMessage().getSessionId());
                     // 使用向量数据库
-                    useVectorStore(advisorSpec, aiMessageWrapper.getParams().getEnableVectorStore());
+                    useVectorStore(advisorSpec, input.getParams().getEnableVectorStore());
                 })
                 .stream()
                 .chatResponse()
