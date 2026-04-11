@@ -84,3 +84,13 @@ git clone https://github.com/qifan777/dive-into-spring-ai
 
 - 416765656（满）
 - 632067985
+
+## Contributor Quick Verification
+<!-- codex-batch30-readme -->
+
+Before opening a PR, run these quick checks locally:
+
+- Build: `git status`
+- Tests: `(no dedicated test command documented)`
+- Keep changes focused: one topic per PR with a clear title
+
