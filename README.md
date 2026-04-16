@@ -11,6 +11,18 @@
 [文档地址](https://www.jarcheng.top/blog/project/spring-ai/intro.html)
 [视频地址](https://www.bilibili.com/video/BV14y411q7RN/)
 
+## 快速索引
+
+| 学习主题 | 后端入口 | 前端入口 / 说明 |
+| :--- | :--- | :--- |
+| SSE 流式输出与对话 | `src/main/java/io/github/qifan777/knowledge/demo` | `front-end/src/views/chat` |
+| Agent / Function Calling | `src/main/java/io/github/qifan777/knowledge/ai/agent` | 根 README 的运行步骤即可覆盖 |
+| 向量检索与文档问答 | `src/main/java/io/github/qifan777/knowledge/ai/document` | 依赖 Redis-Stack 向量检索能力 |
+| Graph / Graph RAG | `src/main/java/io/github/qifan777/knowledge/graph` | 依赖 Neo4j 5+ |
+| Code Assistant / Arthas 分析 | `src/main/java/io/github/qifan777/knowledge/code` | 需要额外准备 Arthas 服务端 |
+
+建议第一次运行时，优先从 “SSE 流式输出与对话” 或 “向量检索与文档问答” 这两条路径开始，再继续尝试 Graph RAG、Code Assistant 这类依赖更多外部服务的示例。
+
 ## 运行环境
 
 - Java 17
