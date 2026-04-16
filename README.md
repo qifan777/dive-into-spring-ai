@@ -49,6 +49,11 @@
     neo4j
     ```
 
+本地第一次启动时，建议优先确认下面两个基础前提：
+
+- **MySQL 8 已可连接**：默认示例配置使用 `jdbc:mysql://localhost:3306/knowledge_base`，后端启动前先确认数据库、账号和密码都已准备好。
+- **Node.js 18+ 与 npm 可用**：前端使用 Vite，建议先执行一次 `node -v` 和 `npm -v`，再进入 `front-end` 目录安装依赖。
+
 ## 运行步骤
 
 ### 1.clone代码
@@ -71,9 +76,16 @@ git clone https://github.com/qifan777/dive-into-spring-ai
 
 前端运行，在front-end目录下
 
-- npm run install
-- npm run api （先运行后端）
+- npm install
+- npm run api （先运行后端，生成前端调用的接口类型）
 - npm run dev
+
+推荐启动顺序：
+
+1. 先启动 MySQL / Redis-Stack / Neo4j 等依赖服务。
+2. 再启动后端 `ServerApplication.java`。
+3. 后端启动成功后，在 `front-end` 目录执行 `npm install`、`npm run api`、`npm run dev`。
+4. 如果前端无法连通后端，优先检查后端端口 `9902` 是否已经启动，以及 `front-end/.env.development` 中的地址是否与本地环境一致。
 
 
 ## 联系方式
