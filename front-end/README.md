@@ -1,46 +1,46 @@
-# mall-admin
+# Front-End Demo
 
-This template should help get you started developing with Vue 3 in Vite.
+## Overview
 
-## Recommended IDE Setup
+This directory contains the Vue 3 + Vite frontend used by the Spring AI teaching demos. It is responsible for login, chat-style interaction, generated API bindings, and the main demo pages under `src/views`.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Prerequisites
 
-## Type Support for `.vue` Imports in TS
+- Node.js 18+
+- npm
+- a running backend service from the repository root
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+## Setup
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+If you want to customize local addresses first, copy `front-end/.env.example` to `.env.development` and adjust the values for your environment.
+
+## Run
+
+Generate the frontend API bindings after the backend is available:
+
+```sh
+npm run api
+```
+
+Then start the local dev server:
 
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## Expected Behavior
+
+- the Vite development server starts without missing dependency errors
+- the generated API files are refreshed after `npm run api`
+- the frontend can reach the backend through the configured local address
+
+## Useful Commands
 
 ```sh
 npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
 npm run lint
 ```
