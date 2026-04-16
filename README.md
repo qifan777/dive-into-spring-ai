@@ -6,10 +6,10 @@
 
 ![知识点](./front-end/src/assets/SrpingAI知识点.png)
 
+## 资料入口
 
-
-[文档地址](https://www.jarcheng.top/blog/project/spring-ai/intro.html)
-[视频地址](https://www.bilibili.com/video/BV14y411q7RN/)
+- [文档地址](https://www.jarcheng.top/spring-ai)
+- [视频地址](https://www.bilibili.com/video/BV14y411q7RN/)
 
 ## 运行环境
 
