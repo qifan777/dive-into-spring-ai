@@ -62,6 +62,8 @@ git clone https://github.com/qifan777/dive-into-spring-ai
 ### 3. 修改配置文件
 
 修改application.yml中的API-KEY, MySQL, Redis-Stack, Neo4j配置
+
+如果你更习惯先准备模板，可以参考根目录的 `.env.example`（后端环境变量/IDE 运行配置）以及 `front-end/.env.example`（前端 Vite 配置）。
 ### 4. 运行项目
 
 后端运行
