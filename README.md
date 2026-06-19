@@ -6,6 +6,12 @@
 
 ![知识点](./front-end/src/assets/SrpingAI知识点.png)
 
+> **起凡api：注册赠送25刀**
+>
+> 一站式 AI 编程 API 中转站，支持 Claude Code、Codex 等常用模型服务，提供稳定、高效、高性价比的调用体验，国内直连，无需魔法。
+>
+> [立即注册领取25刀额度](https://ai.jarcheng.top/register)
+
 
 
 [文档地址](https://www.jarcheng.top/blog/project/spring-ai/intro.html)
