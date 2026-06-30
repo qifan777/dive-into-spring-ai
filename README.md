@@ -6,11 +6,11 @@
 
 ![知识点](./front-end/src/assets/SrpingAI知识点.png)
 
-> **起凡api：注册赠送25刀**
+> **Jarcheng Shop：GPT 代充 / API 中转**
 >
-> 一站式 AI 编程 API 中转站，支持 Claude Code、Codex 等常用模型服务，提供稳定、高效、高性价比的调用体验，国内直连，无需魔法。
+> 一站式 AI 服务入口，提供 GPT 代充与 API 中转，适合需要稳定接入常用模型能力的开发者。
 >
-> [立即注册领取25刀额度](https://ai.jarcheng.top/register)
+> [前往店铺](https://shop.jarcheng.top/)
 
 
 
