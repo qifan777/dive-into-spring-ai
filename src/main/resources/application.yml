@@ -43,6 +43,10 @@ spring:
       secret-key: xxx
     # openai 需要在pom.xml中放开openai starter的注释
     openai:
+      # 起凡 AI 中转站：http://ai.jarcheng.top/，注册赠送25刀，支持 OpenAI 协议
+      # base-url 填 OpenAI 协议地址，不带 /v1，例如 http://ai.jarcheng.top
+      base-url:
+      # api-key 填中转站控制台创建的密钥
       api-key: xxx
     # 智谱清言 同样
     zhipuai:

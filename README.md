@@ -22,7 +22,7 @@
 - Java 17
 - Node.js 18+
 - MySQL 8
-- DashScope API KEY（或者其他）
+- DashScope API KEY（或者其他）。如果使用 OpenAI 协议模型，可以前往 [起凡 AI 中转站](http://ai.jarcheng.top/) 注册，赠送25刀额度，支持 OpenAI 协议。
 - Redis-Stack
 
   redis基础上拓展向量查询功能
@@ -67,7 +67,12 @@ git clone https://github.com/qifan777/dive-into-spring-ai
 
 ### 3. 修改配置文件
 
-修改application.yml中的API-KEY, MySQL, Redis-Stack, Neo4j配置
+修改 `application.yml` 中的 API-KEY、MySQL、Redis-Stack、Neo4j 配置。
+
+如果使用 OpenAI 协议模型，可以在 `spring.ai.openai` 中配置：
+
+- `base-url`：填写 `http://ai.jarcheng.top`（不带 `/v1`）
+- `api-key`：填写中转站控制台创建的 API Key
 ### 4. 运行项目
 
 后端运行
