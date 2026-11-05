@@ -89,10 +89,12 @@ git clone https://github.com/qifan777/dive-into-spring-ai
 
 ## 联系方式
 
-付费远程运行/安装/定制开发联系微信：ljc666max
+gpt/claude/gemini/grok/muse代充：ljc666max
+
+详细价格查看https://shop.jarcheng.top/
 
 其他关于程序运行安装报错请加QQ群：
 
 - 416765656（满）
-- 632067985
+- 632067985（满）
 - 1102705673
